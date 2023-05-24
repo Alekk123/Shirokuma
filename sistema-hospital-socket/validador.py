@@ -18,6 +18,6 @@ while True:
     print(f'Conectado por {addr}')
 
     # ...lógica do microsserviço para processar a requisição
-
+ 
     # Fecha a conexão
     conn.close()
