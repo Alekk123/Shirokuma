@@ -44,22 +44,22 @@ def conexao_cliente(connection):
     # Recebe a escolha do cliente
     choice = connection.recv(1024).decode().strip()
 
-        if choice == 1:
-            # Primeiro acesso - solicita os dados do cliente
-            connection.sendall('Digite seu nome completo: '.encode())
-            nome = connection.recv(1024).decode().strip()
-            connection.sendall('Digite seu nome CPF: '.encode())
-            cpf = connection.recv(1024).decode().strip()
-            connection.sendall('Digite sua data de nascimento (DD/MM/AAAA): '.encode())
-            data_nasc = connection.recv(1024).decode().strip()
+    if choice == 1:
+        # Primeiro acesso - solicita os dados do cliente
+        connection.sendall('Digite seu nome completo: '.encode())
+        nome = connection.recv(1024).decode().strip()
+        connection.sendall('Digite seu nome CPF: '.encode())
+        cpf = connection.recv(1024).decode().strip()
+        connection.sendall('Digite sua data de nascimento (DD/MM/AAAA): '.encode())
+        data_nasc = connection.recv(1024).decode().strip()
 
-            # Conecta ao servidor de cadastro e envia os dados
-            cadastro_data = f'{nome},{cpf},{data_nasc}'
-            cadastro_pacientes_sock.sendall(cadastro_data.encode())
+        # Conecta ao servidor de cadastro e envia os dados
+        cadastro_data = f'{nome},{cpf},{data_nasc}'
+        cadastro_pacientes_sock.sendall(cadastro_data.encode())
 
-            # Recebe a resposta do servidor de cadastro
-            cadastro_response = cadastro_pacientes_sock.recv(1024).decode().strip()
-            connection.sendall(cadastro_response.encode())
+        # Recebe a resposta do servidor de cadastro
+        cadastro_response = cadastro_pacientes_sock.recv(1024).decode().strip()
+        connection.sendall(cadastro_response.encode())
         
         # Exemplo de resposta para o cliente
         response = 'Servidor principal: Conexão recebida com sucesso!'
@@ -74,7 +74,7 @@ while True:
     print(f'Conexão estabelecida com {addr}')
 
     # Trata a conexão do cliente
-    handle_client(cliente_socket)
+    conexao_cliente	(cliente_socket)
 
 # Função para lidar com a conexão do cliente
     
