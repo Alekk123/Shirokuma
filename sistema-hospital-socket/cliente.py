@@ -6,12 +6,12 @@ PORT = 5000  # Porta do servidor principal
 # Criação do socket do cliente
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-
+#conexão com o servidor-principal
 client_socket.connect((HOST, PORT))
-print('Conexão estabelecida com o servidor principal.')
+print('Conexão estabelecida com o servidor principal.', PORT)
 
-menu = client_socket.recv(1024).decode().strip()
-print(menu)
+menu = client_socket.recv(2048).decode().strip()
+#print(menu)
 
 escolha = input("> ")
 client_socket.sendall(escolha.encode())
@@ -31,3 +31,4 @@ if escolha == '1':
     resposta = client_socket.recv(1024).decode().strip()
     print(resposta)
 
+ 

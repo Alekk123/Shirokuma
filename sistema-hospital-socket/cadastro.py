@@ -20,4 +20,4 @@ while True:
     # ...lógica do microsserviço para processar a requisição
 
     # Fecha a conexão
-    conn.close() 
+    conn.close()  

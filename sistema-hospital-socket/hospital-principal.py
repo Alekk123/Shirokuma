@@ -36,12 +36,11 @@ gerenciamento_agenda_sock.connect((GERENCIAMENTO_AGENDA_HOST, GERENCIAMENTO_AGEN
 cadastro_pacientes_sock.connect((CADASTRO_HOST, CADASTRO_PORT))"""
 
 # Função para lidar com a conexão do cliente
-def handle_client(connection):
+def conexao_cliente(connection):
     #menu de escolha
-    menu = 'Bem-vindo(a) para dar continuidade ao atendimento, por favor escolha uma das seguintes opções (selecione apenas o número)\n1. Primeiro Acesso Paciente\n2. Primeiro Acesso Médico\n3. Login\n>'
+    menu = ('Bem-vindo(a) para dar continuidade ao atendimento, por favor escolha uma das seguintes opções (selecione apenas o número)\n1. Primeiro Acesso Paciente\n2. Primeiro Acesso Médico\n3. Login\n>')
     #envia msg pro cliente
     connection.sendall(menu.encode())
-
     # Recebe a escolha do cliente
     choice = connection.recv(1024).decode().strip()
 

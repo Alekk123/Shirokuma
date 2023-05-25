@@ -7,7 +7,6 @@ PORT = 5002
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 s.bind((HOST, PORT))
-s.listen()
 
 
 print('Gerenciamento de Agenda iniciado e esperando por conexões.')
