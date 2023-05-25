@@ -17,7 +17,17 @@ while True:
     conn, addr = s.accept()
     print(f'Conectado por {addr}')
 
-    # ...lógica do microsserviço para processar a requisição
+    # Recebe os dados do cliente
+    data = conn.recv(1024).decode().strip()
+    print('recebendo')
+    nome, cpf, data_nasc = data.split(',')
 
-    # Fecha a conexão
+    print(f'Dados recebidos: Nome={nome}, CPF={cpf}, Data de Nascimento={data_nasc}')
+
+    # Realiza o processamento dos dados do cliente, como salvar no banco de dados
+
+    # Envia uma resposta ao servidor principal
+    response = 'Dados recebidos e processados com sucesso!'
+    conn.sendall(response.encode())
+    
     conn.close() 
