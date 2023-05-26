@@ -10,13 +10,17 @@ client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client_socket.connect((HOST, PORT))
 print('Conexão estabelecida com o servidor principal.', PORT)
 
-menu = client_socket.recv(2048).decode().strip()
-#print(menu)
+login = client_socket.recv(2048).decode().strip()
+print(login)
 
-escolha = input("> ")
-client_socket.sendall(escolha.encode())
+nome = input("Digite seu nome: ")
+cpf = input("Digite seu CPF: ")
+client_socket.sendall(nome.encode())
+client_socket.sendall(cpf.encode())
 
-if escolha == '1':
+
+
+"""if escolha == '1':
     # Primeiro acesso - envia nome e CPF para o servidor principal
     nome = input("Digite seu nome: ")
     cpf = input("Digite seu CPF: ")
@@ -29,6 +33,6 @@ if escolha == '1':
 
     # Recebe a resposta do servidor principal
     resposta = client_socket.recv(1024).decode().strip()
-    print(resposta)
+    print(resposta)"""
 
  

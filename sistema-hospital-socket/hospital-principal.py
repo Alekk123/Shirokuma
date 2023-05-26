@@ -36,9 +36,9 @@ cadastro_pacientes_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 cadastro_pacientes_sock.connect((CADASTRO_HOST, CADASTRO_PORT))
 
 # Função para lidar com a conexão do cliente
-def conexao_cliente(connection):
+def handle_client(connection):
     #menu de escolha
-    menu = ('Bem-vindo(a) para dar continuidade ao atendimento, por favor escolha uma das seguintes opções (selecione apenas o número)\n1. Primeiro Acesso Paciente\n2. Primeiro Acesso Médico\n3. Login\n>')
+    menu = ('Bem-vindo(a) para dar continuidade ao atendimento, por favor escolha uma das seguintes opções (selecione apenas o número)\n1. Primeiro Acesso Paciente\n2. Primeiro Acesso Médico\n3. Login\n')
     #envia msg pro cliente
     connection.sendall(menu.encode())
     # Recebe a escolha do cliente
@@ -74,10 +74,8 @@ while True:
     print(f'Conexão estabelecida com {addr}')
 
     # Trata a conexão do cliente
-    conexao_cliente	(cliente_socket)
+    handle_client(cliente_socket)
 
-# Função para lidar com a conexão do cliente
-    
 
 
         
