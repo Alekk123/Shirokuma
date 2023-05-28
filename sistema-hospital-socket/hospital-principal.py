@@ -24,49 +24,79 @@ sock_hosp.bind((HOST, PORT))
 sock_hosp.listen(5)
 
 # Conecta com o microserviço de validador de dados
-"""validador_dados_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-validador_dados_sock.connect((VALIDADOR_HOST, VALIDADOR_PORT))"""
+validador_dados_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+validador_dados_sock.connect((VALIDADOR_HOST, VALIDADOR_PORT))
 
 # Conecta com o microserviço de gerenciamento de agenda
 """gerenciamento_agenda_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 gerenciamento_agenda_sock.connect((GERENCIAMENTO_AGENDA_HOST, GERENCIAMENTO_AGENDA_PORT))"""
 
 # Conecta com o microserviço de cadastro de pacientes
-cadastro_pacientes_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-cadastro_pacientes_sock.connect((CADASTRO_HOST, CADASTRO_PORT))
+"""cadastro_pacientes_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+cadastro_pacientes_sock.connect((CADASTRO_HOST, CADASTRO_PORT))"""
 
 # Função para lidar com a conexão do cliente
-def handle_client(connection):
-    #menu de escolha
-    menu = ('Bem-vindo(a) para dar continuidade ao atendimento, por favor escolha uma das seguintes opções (selecione apenas o número)\n1. Primeiro Acesso Paciente\n2. Primeiro Acesso Médico\n3. Login\n')
-    #envia msg pro cliente
-    connection.sendall(menu.encode())
-    # Recebe a escolha do cliente
-    choice = connection.recv(1024).decode().strip()
+def handle_client(connection_client):
+    while True:
+        #msg_inicial de escolha
+        msg_inicial = ('Bem-vindo(a), para dar continuidade aos nossos serviços por favor informe nome completo e CPF, mesmo que não tenha cadastro conosco\n')
+        #envia msg pro cliente
+        connection_client.sendall(msg_inicial.encode())
+        # Recebe as informações do cliente
+        name = connection_client.recv(1024).decode().strip()
+        cpf = connection_client.recv(1024).decode().strip()
+        print(f'Conexão com = {name}\nCPF = {cpf}')
 
-    if choice == 1:
-        # Primeiro acesso - solicita os dados do cliente
-        connection.sendall('Digite seu nome completo: '.encode())
-        nome = connection.recv(1024).decode().strip()
-        connection.sendall('Digite seu nome CPF: '.encode())
-        cpf = connection.recv(1024).decode().strip()
-        connection.sendall('Digite sua data de nascimento (DD/MM/AAAA): '.encode())
-        data_nasc = connection.recv(1024).decode().strip()
+        while True:
+            # Enviar os dados para o microsserviço de validação de dados
+            validador_dados_sock.sendall(name.encode())
+            validador_dados_sock.sendall(cpf.encode())
 
-        # Conecta ao servidor de cadastro e envia os dados
-        cadastro_data = f'{nome},{cpf},{data_nasc}'
-        cadastro_pacientes_sock.sendall(cadastro_data.encode())
+            # Recebe a resposta do servidor de cadastro
+            validador_response = validador_dados_sock.recv(1024).decode().strip()
+            #connection_client.sendall(validador_response.encode())
 
-        # Recebe a resposta do servidor de cadastro
-        cadastro_response = cadastro_pacientes_sock.recv(1024).decode().strip()
-        connection.sendall(cadastro_response.encode())
+            # Resposta para o cliente
+            if validador_response == 'CPF válido!':
+                response = f'Usuário validado!, Bem-vindo(a) {name}'
+                connection_client.sendall(response.encode())
+            else:
+                response = '\nCPF inválido ou não encontrado\n==Escolha a opção desejada==\n1. Tentar Novamente\n2. Realizar Cadastro\n3. Sair'
+                connection_client.sendall(response.encode())
+
+            while True:
+                # Recebe a escolha do cliente
+                decision = connection_client.recv(1024).decode().strip()
+
+                # Verifica a escolha do cliente
+                if decision == '1':
+                    # Continua o loop e permite que o cliente tente novamente
+                    handle_client(connection_client)
+                    break
+                    #connection_client.sendall(response.encode())
+                    #continue
+                elif decision == '2':
+                    # Encerra o loop e finaliza a conexão com o cliente
+                    response = 'Encerrando conexão'
+                    connection_client.sendall(response.encode())
+                    break
+
+            """# Recebe a escolha do cliente
+            decision = connection_client.recv(1024).decode().strip()
+
+            # Verifica a escolha do cliente
+            if decision == '1':
+                # Continua o loop e permite que o cliente tente novamente
+                continue
+            elif decision == '2':
+                # Encerra o loop e finaliza a conexão com o cliente
+                break"""
         
-        # Exemplo de resposta para o cliente
-        response = 'Servidor principal: Conexão recebida com sucesso!'
-        connection.sendall(response.encode())
+        # Enviar resposta para o cliente    
+        connection_client.sendall(response.encode())
 
         # Fechar a conexão com o cliente
-        #connection.close()
+        #connection_client.close()"""
 
 while True:
     # Espera por uma nova conexão
