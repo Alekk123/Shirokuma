@@ -52,7 +52,7 @@ recursos computacionais em vários pontos centrais de computação diferentes
 para atingir um objetivo comum e compartilhado.
 Os sistemas distribuídos visam remover gargalos ou pontos centrais de falha de
 um sistema.
-[^2]: é um tipo de kakigōri (uma sobremesa originária do Japão feita de gelo raspado 
+[^2]: É um tipo de kakigōri (uma sobremesa originária do Japão feita de gelo raspado 
 flavorizado com xarope e adoçante, frequentemente leite condensado.), feita com gelo raspado com sabor de leite condensado, 
 pequenos mochi coloridos, frutas e doce de feijão (geralmente de Azuki). Na etimologia Shirokuma significa literalmente 
 "urso branco" e indica "urso polar" em Japonês. 
