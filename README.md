@@ -7,7 +7,7 @@
 
 ## Índice 
 
-* [Título](#Título)
+* [Título](#Titulo)
 * [Badges](#badges)
 * [Índice](#índice)
 * [Descrição do Projeto](#descrição-do-projeto)
@@ -39,7 +39,11 @@ cliente dentro de uma mesma rede.
 ### Autores
 | [<img src="https://avatars.githubusercontent.com/u/65495514?v=4" width=115><br><sub>Bruna de Paula Cordeiro</sub>](https://github.com/bruninhaout) |  [<img src="https://avatars.githubusercontent.com/u/73611056?v=4" width=115><br><sub>Alexsandro Rodrigues Pasinato</sub>](https://github.com/Alekk123) |  [<img src="https://avatars.githubusercontent.com/u/62715760?v=4" width=115><br><sub>Gustavo Matheus Costa Ferreira</sub>](https://github.com/GustavoMCF) | [<img src="https://avatars.githubusercontent.com/u/134543593?v=4" width=115><br><sub>Diego Félix dos Santos</sub>](https://github.com/Diegofelix1989) | [<img src="https://avatars.githubusercontent.com/u/65493185?v=4" width=115><br><sub>Pedro Henrique Medeiros de Melo</sub>](https://github.com/PedroHenriqueMM) |
 | :---: | :---: | :---: | :---: | :---: |
+
 ### Conclusão
+O sistema visa na distribuição dos serviços, garantindo maior disponibilidade e evitando gargalhos nas requisições.
+
+---
 
 [^1]: Um sistema distribuído é uma coleção de programas de computador que utilizam
 recursos computacionais em vários pontos centrais de computação diferentes
