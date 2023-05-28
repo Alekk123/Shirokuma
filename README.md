@@ -17,13 +17,15 @@
 * [Conclusão](#conclusão)
 ---
 ### Descrição do projeto
+
 Projeto em desenvolvimento para a disciplina de sistemas distribuídos[^1] para o curso de 
 Engenharia da computação da UNASP. O nome do grupo (Shirokuma)[^2] significa urso branco em japonês, 
 e o sistema escolhido consiste em um registro de pacientes, médicos e datas de consultas, conforme fluxograma abaixo.
 Para o sistema foi utilizado a linguagem python usando a biblioteca socket para a comunicação entre os servidores e
 cliente dentro de uma mesma rede.
 
-![Fluxograma-shirokuma](https://github.com/bruninhaout/Shirokuma/assets/65495514/0d5016fe-8e00-44c6-b1fd-095db1aec5f1)
+### Fluxograma
+![Fluxograma-shirokumsa](https://github.com/bruninhaout/Shirokuma/assets/65495514/51959974-2016-4d44-8030-f99f94901927)
 <sub> Fluxograma projeto shirokuma, sistema de hospital para cadastro de paciente, consultas e agendamentos. </sub>
 
 ### Funcionalidades
