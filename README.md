@@ -23,7 +23,7 @@ e o sistema escolhido consiste em um registro de pacientes, médicos e datas de 
 Para o sistema foi utilizado a linguagem python usando a biblioteca socket para a comunicação entre os servidores e
 cliente dentro de uma mesma rede.
 
-![Fluxograma-shirokumsa](https://github.com/bruninhaout/Shirokuma/assets/65495514/0d5016fe-8e00-44c6-b1fd-095db1aec5f1)
+![Fluxograma-shirokuma](https://github.com/bruninhaout/Shirokuma/assets/65495514/0d5016fe-8e00-44c6-b1fd-095db1aec5f1)
 <sub> Fluxograma projeto shirokuma, sistema de hospital para cadastro de paciente, consultas e agendamentos. </sub>
 
 ### Funcionalidades
