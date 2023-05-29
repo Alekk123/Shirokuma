@@ -26,7 +26,7 @@ def input_data():
 
         # Recebe a resposta do servidor
         response = client_socket.recv(2048).decode().strip()
-        #print(response)
+        print(response)
 
         # Verifica se a resposta indica que os dados são inválidos
         if 'CPF inválido ou não encontrado' in response:
@@ -44,8 +44,10 @@ def input_data():
                     return
                 else:
                     print("Opção inválida. Por favor, escolha novamente.")
-        else:
-            print(response)
+        # Verifica se a resposta indica que o CPF é válido
+        elif 'Usuário validado!' in response:
+            print("Usuário validado!")
+            return
 
     # Fecha a conexão com o servidor
     # client_socket.close()

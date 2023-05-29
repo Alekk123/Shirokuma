@@ -44,26 +44,28 @@ def handle_client(connection_client):
         connection_client.sendall(msg_inicial.encode())
         # Recebe as informações do cliente
         name = connection_client.recv(1024).decode().strip()
+        print(name)
         cpf = connection_client.recv(1024).decode().strip()
         print(f'Conexão com = {name}\nCPF = {cpf}')
 
-        while True:
-            # Enviar os dados para o microsserviço de validação de dados
-            validador_dados_sock.sendall(name.encode())
-            validador_dados_sock.sendall(cpf.encode())
+        #while True:
+        # Enviar os dados para o microsserviço de validação de dados
+        validador_dados_sock.sendall(name.encode())
+        validador_dados_sock.sendall(cpf.encode())
 
-            # Recebe a resposta do servidor de cadastro
-            validador_response = validador_dados_sock.recv(1024).decode().strip()
-            #connection_client.sendall(validador_response.encode())
+        # Recebe a resposta do servidor de validação
+        validador_response = validador_dados_sock.recv(1024).decode().strip()
+        validador_dados_sock.close()
+        #connection_client.sendall(validador_response.encode())
 
-            # Resposta para o cliente
-            if validador_response == 'CPF válido!':
-                response = f'Usuário validado!, Bem-vindo(a) {name}'
-                connection_client.sendall(response.encode())
-            else:
-                response = '\nCPF inválido ou não encontrado\n==Escolha a opção desejada==\n1. Tentar Novamente\n2. Realizar Cadastro\n3. Sair'
-                connection_client.sendall(response.encode())
-
+        # Resposta para o cliente
+        if validador_response == 'CPF válido!':
+            response = f'Usuário validado!, Bem-vindo(a) {name}'
+            connection_client.sendall(response.encode())
+        else:
+            response = '\nCPF inválido ou não encontrado\n==Escolha a opção desejada==\n1. Tentar Novamente\n2. Realizar Cadastro\n3. Sair'
+            connection_client.sendall(response.encode())
+        
             while True:
                 # Recebe a escolha do cliente
                 decision = connection_client.recv(1024).decode().strip()
@@ -72,31 +74,14 @@ def handle_client(connection_client):
                 if decision == '1':
                     # Continua o loop e permite que o cliente tente novamente
                     handle_client(connection_client)
-                    break
                     #connection_client.sendall(response.encode())
-                    #continue
+                    continue
                 elif decision == '2':
                     # Encerra o loop e finaliza a conexão com o cliente
                     response = 'Encerrando conexão'
                     connection_client.sendall(response.encode())
-                    break
+                    return   
 
-            """# Recebe a escolha do cliente
-            decision = connection_client.recv(1024).decode().strip()
-
-            # Verifica a escolha do cliente
-            if decision == '1':
-                # Continua o loop e permite que o cliente tente novamente
-                continue
-            elif decision == '2':
-                # Encerra o loop e finaliza a conexão com o cliente
-                break"""
-        
-        # Enviar resposta para o cliente    
-        connection_client.sendall(response.encode())
-
-        # Fechar a conexão com o cliente
-        #connection_client.close()"""
 
 while True:
     # Espera por uma nova conexão
