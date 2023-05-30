@@ -84,15 +84,11 @@ def connection_client(connection_client):
     # Lida com a escolha do cliente
     while True:
         choice = connection_client.recv(1024).decode().strip()
-        if choice == '1':
-            # Cliente escolheu tentar novamente
-            #connection_client.sendall('OK'.encode())
+        if choice == '1': # Cliente escolheu tentar novamente
             name = connection_client.recv(1024).decode().strip()
             cpf = connection_client.recv(1024).decode().strip()
             print(f'Nova conexão com {name}\nCPF = {cpf}')
             response = microsservico_validador(name, cpf)
-            #validador_dados_sock.sendall(name.encode())
-            #validador_dados_sock.sendall(cpf.encode())
             
             #response = validador_dados_sock.recv(1024).decode().strip()
             print(response)
@@ -120,50 +116,7 @@ def connection_client(connection_client):
             # Opção inválida
             invalid_option = "Opção inválida. Por favor, escolha novamente."
 
-    """validation_result = microsservico_validador(name, cpf)
 
-    #CPF valido
-    if validation_result == 'CPF válido!':
-        # Cliente validado com sucesso
-        print("Usuário validado!")
-        connection_client.sendall(validation_result.encode())
-    else: #CPF Invalido
-        while True:
-            # Envia opções para o cliente escolher
-            invalid_message = "CPF inválido. Escolha uma opção:\n1. Tentar novamente\n2. Realizar cadastro\n3. Sair\n"
-            connection_client.sendall(invalid_message.encode())
-            #Recebe escolha o usuário
-            choice = connection_client.recv(1024).decode().strip()
-            if choice == '1':
-                name = connection_client.recv(1024).decode().strip()
-                print(name)
-                cpf = connection_client.recv(1024).decode().strip()
-                print(f'CPF do loop = {cpf}')
-                validation = microsservico_validador(name, cpf)
-                print('mandou??')
-                print(validation)
-
-                if validation == 'CPF válido!':
-                    # Cliente validado com sucesso
-                    print("Usuário validado!")
-                    connection_client.sendall(validation_result.encode())
-                    break
-                else:
-                    print('Invalidoo')
-            elif choice == '2':
-                # Cliente escolheu realizar cadastro
-                print("Cliente escolheu realizar cadastro.")
-                # Outras ações relacionadas ao cadastro
-                break  # Encerra o loop e fecha a conexão com o cliente
-            elif choice == '3':
-                # Cliente escolheu encerrar conexão
-                break
-            else:
-                # Opção inválida
-                invalid_option = "Opção inválida. Por favor, escolha novamente."
-                connection_client.sendall(invalid_option.encode())
-       
-    """
 #def start_server():
 
 while True:
