@@ -74,17 +74,19 @@ def connection_client(connection_client):
     # Valide o CPF e envie a resposta para o cliente
     if microsservico_validador(name, cpf) == 'CPF válido!':
         response = 'CPF válido!'
+        connection_client.sendall(response.encode())
     else:
         response = 'CPF inválido!'
+        connection_client.sendall(response.encode())
 
-    connection_client.sendall(response.encode())
+    #connection_client.sendall(response.encode())
 
     # Lida com a escolha do cliente
     while True:
         choice = connection_client.recv(1024).decode().strip()
         if choice == '1':
             # Cliente escolheu tentar novamente
-            connection_client.sendall('OK'.encode())
+            #connection_client.sendall('OK'.encode())
             name = connection_client.recv(1024).decode().strip()
             cpf = connection_client.recv(1024).decode().strip()
             print(f'Nova conexão com {name}\nCPF = {cpf}')
@@ -99,12 +101,12 @@ def connection_client(connection_client):
             connection_client.sendall(response.encode())
 
             # Valide o novo CPF e envie a resposta para o cliente
-            if microsservico_validador(name, cpf):
+            """if microsservico_validador(name, cpf):
                 response = 'CPF válido!'
             else:
                 response = 'CPF inválido!'
 
-            connection_client.sendall(response.encode())
+            connection_client.sendall(response.encode())"""
             
         elif choice == '2':
             # Cliente escolheu realizar cadastro
