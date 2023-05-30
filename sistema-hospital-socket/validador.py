@@ -49,19 +49,26 @@ while True:
     conn, addr = s.accept()
     print(f'Conectado por {addr}')
     
-    # Recebe os dados do servidor principal
-    name = conn.recv(1024).decode().strip()
-    cpf = conn.recv(1024).decode().strip()
+    while True:
+        # Recebe os dados do servidor principal
+        data = conn.recv(1024).decode().strip()
 
-    print(f'Recebido dados de {name}\nCPF = {cpf}')
+        if not data:
+            # Verifica se não há mais dados a receber
+            break
 
-    # Valida o CPF
-    if valida_cpf(cpf):
-        response = 'CPF válido!'
-    else:
-        response = 'CPF inválido!'
+        # Divide os dados recebidos em nome e CPF
+        name, cpf = data.split(';')
 
-    # Envia a resposta de volta para o servidor principal
-    conn.sendall(response.encode())
+        print(f'Recebido dados de {name}\nCPF = {cpf}')
+
+        # Valida o CPF
+        if valida_cpf(cpf):
+            response = 'CPF válido!'
+        else:
+            response = 'CPF inválido!'
+
+        # Envia a resposta de volta para o servidor principal
+        conn.sendall(response.encode())
 # Fecha a conexão
 #conn.close()

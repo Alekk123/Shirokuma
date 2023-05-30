@@ -39,17 +39,19 @@ gerenciamento_agenda_sock.connect((GERENCIAMENTO_AGENDA_HOST, GERENCIAMENTO_AGEN
 cadastro_pacientes_sock.connect((CADASTRO_HOST, CADASTRO_PORT))"""
 
 def microsservico_validador(name, cpf):
-    
-    #Envia dados para o validador
-    validador_dados_sock.sendall(name.encode())
-    validador_dados_sock.sendall(cpf.encode())
-    #Recebe resposta do validador
-    response = validador_dados_sock.recv(1024).decode().strip()
+    while True:
+        data = f'{name};{cpf}'
+        validador_dados_sock.sendall(data.encode())
+        #Envia dados para o validador
+        #validador_dados_sock.sendall(name.encode())
+        #validador_dados_sock.sendall(cpf.encode())
+        #Recebe resposta do validador
+        response = validador_dados_sock.recv(1024).decode().strip()
 
-    # Fecha a conexão com o microsserviço de validação
-    #validador_dados_sock.close()
+        # Fecha a conexão com o microsserviço de validação
+        #validador_dados_sock.close()
 
-    return response
+        return response
 
 
 """def microsservico_gerenciamento():
@@ -69,7 +71,54 @@ def connection_client(connection_client):
     cpf = connection_client.recv(1024).decode().strip()
     print(f'Conexão com = {name}\nCPF = {cpf}')
 
-    validation_result = microsservico_validador(name, cpf)
+    # Valide o CPF e envie a resposta para o cliente
+    if microsservico_validador(name, cpf) == 'CPF válido!':
+        response = 'CPF válido!'
+    else:
+        response = 'CPF inválido!'
+
+    connection_client.sendall(response.encode())
+
+    # Lida com a escolha do cliente
+    while True:
+        choice = connection_client.recv(1024).decode().strip()
+        if choice == '1':
+            # Cliente escolheu tentar novamente
+            connection_client.sendall('OK'.encode())
+            name = connection_client.recv(1024).decode().strip()
+            cpf = connection_client.recv(1024).decode().strip()
+            print(f'Nova conexão com {name}\nCPF = {cpf}')
+            response = microsservico_validador(name, cpf)
+            #validador_dados_sock.sendall(name.encode())
+            #validador_dados_sock.sendall(cpf.encode())
+            
+            #response = validador_dados_sock.recv(1024).decode().strip()
+            print(response)
+
+            # Envia a resposta para o cliente
+            connection_client.sendall(response.encode())
+
+            # Valide o novo CPF e envie a resposta para o cliente
+            if microsservico_validador(name, cpf):
+                response = 'CPF válido!'
+            else:
+                response = 'CPF inválido!'
+
+            connection_client.sendall(response.encode())
+            
+        elif choice == '2':
+            # Cliente escolheu realizar cadastro
+            connection_client.sendall('OK'.encode())
+            # Outras ações relacionadas ao cadastro
+            break
+        elif choice == '3':
+            # Cliente escolheu encerrar conexão
+            break
+        else:
+            # Opção inválida
+            invalid_option = "Opção inválida. Por favor, escolha novamente."
+
+    """validation_result = microsservico_validador(name, cpf)
 
     #CPF valido
     if validation_result == 'CPF válido!':
@@ -112,11 +161,8 @@ def connection_client(connection_client):
                 invalid_option = "Opção inválida. Por favor, escolha novamente."
                 connection_client.sendall(invalid_option.encode())
        
-    
+    """
 #def start_server():
-# Inicia o microsserviço de validação
-validador_dados_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-validador_dados_sock.connect((VALIDADOR_HOST, VALIDADOR_PORT))
 
 while True:
     # Espera por uma nova conexão
