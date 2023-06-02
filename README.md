@@ -5,17 +5,6 @@
 <img src="http://img.shields.io/static/v1?label=STATUS&message=EM%20DESENVOLVIMENTO&color=GREEN&style=for-the-badge"/>
 </p>
 
-## Índice 
-
-* [Título](#Titulo)
-* [Badges](#badges)
-* [Índice](#índice)
-* [Descrição do Projeto](#descrição-do-projeto)
-* [Funcionalidades](#Funcionalidades)
-* [Tecnologias utilizadas](#tecnologias-utilizadas)
-* [Autores](#pessoas-contribuidoras)
-* [Conclusão](#conclusão)
----
 ### Descrição do projeto
 
 Projeto em desenvolvimento para a disciplina de sistemas distribuídos[^1] para o curso de 
