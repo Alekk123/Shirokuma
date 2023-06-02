@@ -1,4 +1,5 @@
 import socket
+import json
 
 HOST = 'localhost'
 PORT = 5001
