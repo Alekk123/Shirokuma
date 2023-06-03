@@ -4,13 +4,6 @@ import socket
 HOST = 'localhost'
 PORT = 5000
 
-# Configurações dos microserviços
-GERENCIAMENTO_AGENDA_HOST = 'localhost'
-GERENCIAMENTO_AGENDA_PORT = 5002
-
-CADASTRO_HOST = 'localhost'
-CADASTRO_PORT = 5003
-
 #Configurações conexão com o microsserviço de validação
 VALIDADOR_HOST = 'localhost'
 VALIDADOR_PORT = 5001
@@ -18,6 +11,21 @@ VALIDADOR_PORT = 5001
 validador_dados_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 # Conecta com o microserviço de validador de dados
 validador_dados_sock.connect((VALIDADOR_HOST, VALIDADOR_PORT))
+
+# Configurações conexão com o microsserviço de cadastro
+CADASTRO_HOST = 'localhost'
+CADASTRO_PORT = 5003
+# Criação do socket cadastro
+"""cadastro_dados_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+cadastro_dados_sock.connect((CADASTRO_HOST, CADASTRO_PORT))"""
+
+# Configurações de conexão do microserviço de agenda
+GERENCIAMENTO_AGENDA_HOST = 'localhost'
+GERENCIAMENTO_AGENDA_PORT = 5002
+# Conecta com o microserviço de gerenciamento de agenda
+"""gerenciamento_agenda_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+gerenciamento_agenda_sock.connect((GERENCIAMENTO_AGENDA_HOST, GERENCIAMENTO_AGENDA_PORT))"""
+
 
 # Cria o socket do servidor principal
 sock_hosp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -29,22 +37,12 @@ sock_hosp.bind((HOST, PORT))
 sock_hosp.listen(5)
 
 
-
-# Conecta com o microserviço de gerenciamento de agenda
-"""gerenciamento_agenda_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-gerenciamento_agenda_sock.connect((GERENCIAMENTO_AGENDA_HOST, GERENCIAMENTO_AGENDA_PORT))"""
-
-# Conecta com o microserviço de cadastro de pacientes
-"""cadastro_pacientes_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-cadastro_pacientes_sock.connect((CADASTRO_HOST, CADASTRO_PORT))"""
-
 def microsservico_validador(name, cpf):
     while True:
         data = f'{name};{cpf}'
+         #Envia dados para o validador
         validador_dados_sock.sendall(data.encode())
-        #Envia dados para o validador
-        #validador_dados_sock.sendall(name.encode())
-        #validador_dados_sock.sendall(cpf.encode())
+       
         #Recebe resposta do validador
         response = validador_dados_sock.recv(1024).decode().strip()
 
@@ -72,14 +70,9 @@ def connection_client(connection_client):
     print(f'Conexão com = {name}\nCPF = {cpf}')
 
     # Valide o CPF e envie a resposta para o cliente
-    if microsservico_validador(name, cpf) == 'CPF válido!':
-        response = 'CPF válido!'
-        connection_client.sendall(response.encode())
-    else:
-        response = 'CPF inválido!'
-        connection_client.sendall(response.encode())
+    response = microsservico_validador(name, cpf)
+    connection_client.sendall(response.encode())
 
-    #connection_client.sendall(response.encode())
 
     # Lida com a escolha do cliente
     while True:
@@ -95,14 +88,6 @@ def connection_client(connection_client):
 
             # Envia a resposta para o cliente
             connection_client.sendall(response.encode())
-
-            # Valide o novo CPF e envie a resposta para o cliente
-            """if microsservico_validador(name, cpf):
-                response = 'CPF válido!'
-            else:
-                response = 'CPF inválido!'
-
-            connection_client.sendall(response.encode())"""
             
         elif choice == '2':
             # Cliente escolheu realizar cadastro

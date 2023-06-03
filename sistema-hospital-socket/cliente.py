@@ -39,14 +39,6 @@ def input_data():
                     response = client_socket.recv(2048).decode().strip()
                     print(response)
 
-                            
-                    """client_socket.sendall(decision.encode())
-                    nome = input("Nome completo: ")
-                    client_socket.sendall(nome.encode())
-                    cpf = input("Digite seu CPF: ")
-                    client_socket.sendall(cpf.encode())
-                    response = client_socket.recv(2048).decode().strip()
-                    print(response)"""
 
                     if decision == 'CPF válido!':
                         # Cliente validado com sucesso
@@ -67,7 +59,7 @@ def input_data():
                 else:
                      print("Opção inválida. Por favor, escolha novamente.")
         # Verifica se a resposta indica que o CPF é válido
-        elif 'CPF válido!' in response:
+        elif 'CPF válido, porém usuário não encontrado' in response:
             print("Usuário validado!")
             return
 
