@@ -51,11 +51,14 @@ def microsservico_validador(name, cpf):
 
         return response
 
+"""def microservico_cadastro(name, cpf, tipo):
 
+    response  = ca
+    return response
+"""
 """def microsservico_gerenciamento():
-    return
-def microservico_cadastro():
     return"""
+
 
 # Função para lidar com a conexão do cliente
 def connection_client(connection_client):
@@ -88,21 +91,37 @@ def connection_client(connection_client):
 
             # Envia a resposta para o cliente
             connection_client.sendall(response.encode())
-            
         elif choice == '2':
-            # Cliente escolheu realizar cadastro
-            connection_client.sendall('OK'.encode())
-            # Outras ações relacionadas ao cadastro
-            break
-        elif choice == '3':
             # Cliente escolheu encerrar conexão
             break
         else:
             # Opção inválida
             invalid_option = "Opção inválida. Por favor, escolha novamente."
 
+            # Verifica se o CPF é válido, mas não encontrado
+            if 'CPF válido, porém usuário não encontrado' in response:
+                # Inicia o processo de cadastro automaticamente
+                response = receber_dados_cadastro(connection_client)
+                connection_client.sendall(response.encode())
+                break
 
-#def start_server():
+def receber_dados_cadastro(connection_client):
+    # Envia uma mensagem de confirmação para o cliente
+    confirmation_msg = "Envie os dados de cadastro."
+    #connection_client.sendall(confirmation_msg.encode())
+
+    # Recebe os dados de cadastro do cliente
+    name = connection_client.recv(1024).decode().strip()
+    cpf = connection_client.recv(1024).decode().strip()
+    user_type = connection_client.recv(1024).decode().strip()
+    print(f'{name}\n, {cpf}\n{user_type}\n')
+
+    # Processa os dados de cadastro
+    """response = microservico_cadastro(name, cpf, user_type)
+    connection_client.sendall(response.encode())"""
+
+    # Fecha a conexão com o cliente
+    #connection_client.close()
 
 while True:
     # Espera por uma nova conexão

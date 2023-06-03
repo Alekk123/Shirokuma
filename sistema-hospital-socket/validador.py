@@ -45,17 +45,6 @@ def valida_cpf(cpf):
 
     return True
 
-"""def consulta_usuario(cpf):
-    with open('user.json', 'r') as file:
-        data = json.load(file)
-        for medico in data['medicos']:
-            if cpf == medico['cpf']:
-                return 'CPF válido e usuário encontrado (médico)!'
-        for paciente in data['pacientes']:
-            if cpf == paciente['cpf']:
-                return 'CPF válido e usuário encontrado (paciente)!'
-    return 'CPF válido, mas usuário não encontrado.'"""
-
 while True:
     # Espera por uma conexão
     conn, addr = s.accept()
@@ -91,7 +80,7 @@ while True:
                             response = 'CPF válido e usuário encontrado (médico)!'
                             break
                     else:
-                        response = 'CPF válido, porém usuário não encontrado. Favor realizar cadastro!'
+                        response = 'CPF válido, porém usuário não encontrado. Favor realizar cadastro!\n'
         else:
             response = 'CPF inválido!'
 
