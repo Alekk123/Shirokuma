@@ -21,15 +21,16 @@ while True:
     # Recebe os dados do cliente
     print('recebendo')
 
-    data = conn.recv(1024).decode().strip()
-    name, cpf, user_type = data.split(';')
-    print(f'Dados recebidos: Nome = {name}, CPF = {cpf}, tipo = {user_type}')
-
-    # Verifica se o usuário é médico
-    if user_type == '2':
-        crm = conn.recv(1024).decode().strip()
-        especialidade = conn.recv(1024).decode().strip()
+    user_type = conn.recv(1024).decode().strip()
+    if user_type == '1':
+        data = conn.recv(1024).decode().strip()
+        name, cpf = data.split(';')
+        print(f'Dados recebidos: Nome = {name}, CPF = {cpf}, tipo = {user_type}')
+    elif user_type == '2':
+        data = conn.recv(1024).decode().strip()
+        name, cpf, crm, especialidade = data.split(';')
         print(f'Dados recebidos: Nome = {name}, CPF = {cpf}, tipo = {user_type}, crm = {crm}, especialidade = {especialidade}')
+    
     else:
         crm = None
         especialidade = None

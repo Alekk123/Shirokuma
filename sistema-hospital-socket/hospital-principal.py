@@ -39,7 +39,8 @@ def microsservico_cadastro(name, cpf, user_type, crm=None, especialidade=None):
     print('chegou aqui bobona')
     # Verifica o tipo de usuário
     if user_type == '1':
-        data = f'{name};{cpf};{user_type}'
+        cadastro_dados_sock.sendall(user_type.encode())
+        data = f'{name};{cpf}'
         print(name, cpf, user_type)
         cadastro_dados_sock.sendall(data.encode())
 
@@ -53,13 +54,15 @@ def microsservico_cadastro(name, cpf, user_type, crm=None, especialidade=None):
             response = "Dados adicionais (CRM e especialidade) não foram fornecidos."
             return response
         else:
-            data = f'{name};{cpf};{user_type}'
+            cadastro_dados_sock.sendall(user_type.encode())
+            data = f'{name};{cpf};{crm};{especialidade}'
             cadastro_dados_sock.sendall(data.encode())
+            print(name, cpf, user_type, crm, especialidade)
             """cadastro_dados_sock.sendall(name.encode())
             cadastro_dados_sock.sendall(cpf.encode())
-            cadastro_dados_sock.sendall(user_type.encode())"""
+            cadastro_dados_sock.sendall(user_type.encode())
             cadastro_dados_sock.sendall(crm.encode())
-            cadastro_dados_sock.sendall(especialidade.encode())
+            cadastro_dados_sock.sendall(especialidade.encode())"""
         
         # Retorna a resposta adequada para o cliente
         response = "Cadastro de médico realizado com sucesso!"
