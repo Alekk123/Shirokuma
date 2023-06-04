@@ -19,11 +19,20 @@ while True:
     print(f'Conectado por {addr}')
 
     # Recebe os dados do cliente
-    data = conn.recv(1024).decode().strip()
     print('recebendo')
-    nome, cpf, data_nasc = data.split(',')
 
-    print(f'Dados recebidos: Nome={nome}, CPF={cpf}, Data de Nascimento={data_nasc}')
+    data = conn.recv(1024).decode().strip()
+    name, cpf, user_type = data.split(';')
+    print(f'Dados recebidos: Nome = {name}, CPF = {cpf}, tipo = {user_type}')
+
+    # Verifica se o usuário é médico
+    if user_type == '2':
+        crm = conn.recv(1024).decode().strip()
+        especialidade = conn.recv(1024).decode().strip()
+        print(f'Dados recebidos: Nome = {name}, CPF = {cpf}, tipo = {user_type}, crm = {crm}, especialidade = {especialidade}')
+    else:
+        crm = None
+        especialidade = None
 
     # Realiza o processamento dos dados do cliente, como salvar no banco de dados
 
@@ -31,4 +40,4 @@ while True:
     response = 'Dados recebidos e processados com sucesso!'
     conn.sendall(response.encode())
     
-    conn.close() 
+    #conn.close() 

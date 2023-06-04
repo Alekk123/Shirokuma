@@ -40,8 +40,8 @@ def microsservico_cadastro(name, cpf, user_type, crm=None, especialidade=None):
     # Verifica o tipo de usuário
     if user_type == '1':
         data = f'{name};{cpf};{user_type}'
-        # Cadastro de paciente
-        cadastro_dados_sock.sendall(data.encode)
+        print(name, cpf, user_type)
+        cadastro_dados_sock.sendall(data.encode())
 
         # Retorna a resposta adequada para o cliente
         response = "Cadastro de paciente realizado com sucesso!"
@@ -53,8 +53,14 @@ def microsservico_cadastro(name, cpf, user_type, crm=None, especialidade=None):
             response = "Dados adicionais (CRM e especialidade) não foram fornecidos."
             return response
         else:
-            data = f'{name};{cpf};{user_type};{crm};{especialidade}'
-
+            data = f'{name};{cpf};{user_type}'
+            cadastro_dados_sock.sendall(data.encode())
+            """cadastro_dados_sock.sendall(name.encode())
+            cadastro_dados_sock.sendall(cpf.encode())
+            cadastro_dados_sock.sendall(user_type.encode())"""
+            cadastro_dados_sock.sendall(crm.encode())
+            cadastro_dados_sock.sendall(especialidade.encode())
+        
         # Retorna a resposta adequada para o cliente
         response = "Cadastro de médico realizado com sucesso!"
         return response
@@ -85,7 +91,7 @@ def receber_dados_cadastro(connection_client):
     user_type = connection_client.recv(1024).decode().strip()
     print(f'{name}\n{cpf}\n{user_type}\n')
     
-    if user_type.lower() == '2':
+    if user_type == '2':
         # Recebe os dados adicionais para o cadastro de médico
         password = connection_client.recv(1024).decode().strip()
         crm = connection_client.recv(1024).decode().strip()
@@ -94,10 +100,9 @@ def receber_dados_cadastro(connection_client):
         response = microsservico_cadastro(name, cpf, user_type, crm, especialidade)
         return response
     else:
-        crm = None
-        especialidade = None
-        response = microsservico_cadastro(name, cpf, user_type, crm=None, especialidade=None)
-        return response
+        response = microsservico_cadastro(name, cpf, user_type)
+    
+    return response
 
     # Processa os dados de cadastro
     response = microsservico_cadastro(name, cpf, user_type, crm=None, especialidade=None)
@@ -135,7 +140,7 @@ def microsservico_agenda(date, time, description):
 
 
 # Função para lidar com a conexão do cliente
-def connection_client(connection_client):
+def handle_client_connection(connection_client):
     #msg_inicial de escolha
     msg_inicial = ('Bem-vindo(a), para dar continuidade aos nossos serviços por favor informe nome completo e CPF, mesmo que não tenha cadastro conosco\n')
     #envia msg pro cliente
@@ -185,7 +190,7 @@ while True:
     print(f'Conexão estabelecida com {addr}')
 
     # Trata a conexão do cliente
-    connection_client(cliente_socket)
+    handle_client_connection(cliente_socket)
 
 
 

@@ -44,7 +44,9 @@ def enviar_dados_cadastro(name, cpf):
         client_socket.sendall(crm.encode())
         especialidade = input('Digite a especialidade: ')
         client_socket.sendall(especialidade.encode())
-
+    else:
+        crm = None
+        especialidade = None
     # Recebe a resposta do servidor sobre o sucesso do cadastro
     response = client_socket.recv(2048).decode().strip()
     print(response)
@@ -96,23 +98,14 @@ def input_data():
                     print("Encerrando conexão.")
                     return
                 else:
-                    """response = client_socket.recv(1024).decode().strip()
-                    print(response)
-                    if 'CPF válido, porém usuário não encontrado' in response:
-                        response = enviar_dados_cadastro()
-                        client_socket.sendall(response.encode())"""
                     break
 
         # Verifica se a resposta indica que o CPF é válido
         elif 'CPF válido, porém usuário não encontrado' in response:
-
             #client_socket.sendall(response.encode())
             response = enviar_dados_cadastro(name, cpf)
             print(response)
             return
-
-
-
 
 # Executa a função para inserção de dados do cliente
 input_data()
