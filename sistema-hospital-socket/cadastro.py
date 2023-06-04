@@ -36,7 +36,7 @@ while True:
             'funcao': int(user_type),
         })
         response = 'Paciente cadastrado com sucesso'
-        conn.sendall(response.encode())
+        #conn.sendall(response.encode())
 
     elif user_type == '2':
         client_data = conn.recv(1024).decode().strip()
@@ -51,12 +51,9 @@ while True:
             'especialidade': especialidade
         })
         response = 'Médico cadastrado com sucesso'
-        conn.sendall(response.encode())
+        
+    #conn.sendall(response.encode())
 
-    # Envia uma resposta ao servidor principal
-    """response = 'Dados recebidos e processados com sucesso!'
-    conn.sendall(response.encode())
-"""
     with open('user.json', 'w') as file:
         json.dump(data, file, indent=2)
     
