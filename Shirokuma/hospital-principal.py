@@ -60,14 +60,14 @@ def microsservico_validador(name, cpf):
         return response
 
 
-def microsservico_cadastro(name, cpf):
+def microsservico_cadastro(name, cpf, funcao, crm):
     while True:
-        data = f'{name};{cpf}'
+        data = f'{name};{cpf};{funcao};{crm}'
         cadastro_dados_sock.sendall(data.encode())
         response_cadastro = cadastro_dados_sock.recv(1024).decode().strip()
         return response_cadastro
     
-def selecionar_dados(cpf):
+def consulta_db(cpf):
     with open('user.json', 'r') as file:
         linhas = file.readlines()
 
@@ -79,8 +79,10 @@ def selecionar_dados(cpf):
 #        bd_crm = dados.get('crm', None)
 
         if bd_cpf == cpf:
-            print("Seu CPF já está no banco de dados, Reconecte :) \n")
-
+            response = True
+            return response
+    response = False
+    return response
 
 """def microsservico_gerenciamento():
     return
@@ -118,7 +120,6 @@ def connection_client(connection_client):
         if choice == '1':  # Cliente escolheu tentar novamente
             name = connection_client.recv(1024).decode().strip()
             cpf = connection_client.recv(1024).decode().strip()
-            funcao = connection_client.recv(1024).decode().strip()
             print(f'Nova conexão com {name}\nCPF = {cpf}')
             response = microsservico_validador(name, cpf)
 
@@ -140,24 +141,35 @@ def connection_client(connection_client):
             # Cliente escolheu realizar cadastro
             name = connection_client.recv(1024).decode().strip()
             cpf = connection_client.recv(1024).decode().strip()
-            connection_client.sendall(response.encode())
-            funcao = connection_client.recv(1024).decode().strip()
+            #connection_client.sendall(response.encode())
             if microsservico_validador(name, cpf) == 'CPF válido!':
-                selecionar_dados(cpf) # Cancelar tentativa de cadastro
-                if funcao == 1: 
-                    microsservico_cadastro(name, cpf, funcao)
-                elif funcao == 2:
-                    connection_client.sendall(response.encode())
-                    senha_cadastro = connection_client.recv(1024).decode().strip()
-                    with open('senha.txt', 'r') as file:
-                        senha_sistema = file.readline()
-                        senha_sistema = senha_sistema.rstrip('\n')
-                    if senha_cadastro == senha_sistema: 
-                        connection_client.sendall(response.encode())
-                        crm = connection_client.recv(1024).decode().strip()    
+                isCPFinDB = consulta_db(cpf)
+                if isCPFinDB == True:
+                    #microsservico_gerenciamento()
+                    break
+                elif isCPFinDB == False:
+                    funcCadastroMSG = ("Selecione sua Funcao\n1 - Paciente\n2 - Medico\n")
+                    connection_client.sendall(funcCadastroMSG.encode())
+                    funcao = connection_client.recv(1024).decode().strip()
+                    if funcao == 1:                            
                         microsservico_cadastro(name, cpf, funcao, crm)
-                else:
-                    response = 'CPF inválido!'
+                        #microsservico_gerenciamento()
+                        break
+                    elif funcao == 2:
+                        askSenha = ("Digite a Senha para Cadastro:\n")
+                        connection_client.sendall(askSenha.encode())
+                        senha_cadastro = connection_client.recv(1024).decode().strip()
+                        with open('senha.txt', 'r') as file:
+                            senha_sistema = file.readline()
+                            senha_sistema = senha_sistema.rstrip('\n')
+                        if senha_cadastro == senha_sistema: 
+                            askCRM = ("Digite o seu CRM:\n")
+                            connection_client.sendall(askCRM.encode())
+                            crm = connection_client.recv(1024).decode().strip()    
+                            microsservico_cadastro(name, cpf, funcao, crm)
+                    else:
+                        response = 'CPF inválido!'
+                        return response
             # Outras ações relacionadas ao cadastro
 #            break
         elif choice == '3':

@@ -22,7 +22,7 @@ def input_data():
 
         # Recebe a resposta do servidor sobre validação dos dados
         response = client_socket.recv(2048).decode().strip()
-        print(response) #ok
+#        print(response) #ok
     
         # Verifica se a resposta indica que os dados são inválidos
         if 'CPF inválido' in response:
@@ -56,20 +56,19 @@ def input_data():
                     
                 elif decision == '2':
                     # Envia a decisão para o servidor
-#                    client_socket.sendall(decision.encode())
+                    client_socket.sendall(decision.encode())
 #                    response = client_socket.recv(2048).decode().strip()
-                    name = input("Nome completo: ")
-                    client_socket.sendall(name.encode())
-                    cpf = input("Digite seu CPF: ")
-                    client_socket.sendall(cpf.encode())
-                    response = client_socket.recv(2048).decode().strip()
-                    funcao = input("Selecione sua Funcao\n1 - Paciente\n2 - Medico\nFuncao: ")
+                    choose_function = client_socket.recv(2048).decode().strip()
+                    print(choose_function)
+                    funcao = input("Funcao: ")
                     client_socket.sendall(funcao.encode())
-                    response = client_socket.recv(2048).decode().strip()
-                    senha_cadastro = input("Digite a Senha para Cadastro: ")
+                    cadastro_senha = client_socket.recv(2048).decode().strip()
+                    print(cadastro_senha)
+                    senha_cadastro = input("Senha: ")
                     client_socket.sendall(senha_cadastro.encode())
-                    response = client_socket.recv(2048).decode().strip()
-                    crm = input("Digite o seu CRM: ")
+                    crm_cadastro = client_socket.recv(2048).decode().strip()
+                    print(crm_cadastro)
+                    crm = input("CRM: ")
                     client_socket.sendall(crm.encode())
                     response = client_socket.recv(2048).decode().strip()
                     print('mandou os dados')
@@ -86,6 +85,7 @@ def input_data():
                     return
                 else:
                      print("Opção inválida. Por favor, escolha novamente.")
+                return decision
         # Verifica se a resposta indica que o CPF é válido
         elif 'CPF válido!' in response:
             print("Usuário validado!")
@@ -96,3 +96,4 @@ def input_data():
 
 # Executa a função para inserção de dados do cliente
 input_data()
+
