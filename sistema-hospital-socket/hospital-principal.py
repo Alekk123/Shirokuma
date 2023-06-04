@@ -43,9 +43,8 @@ def microsservico_cadastro(name, cpf, user_type, crm=None, especialidade=None):
         data = f'{name};{cpf}'
         print(name, cpf, user_type)
         cadastro_dados_sock.sendall(data.encode())
-
         # Retorna a resposta adequada para o cliente
-        response = "Cadastro de paciente realizado com sucesso!"
+        response = cadastro_dados_sock.recv(1024).decode().strip()
         return response
     elif user_type == '2':
         # Cadastro de médico
@@ -58,15 +57,10 @@ def microsservico_cadastro(name, cpf, user_type, crm=None, especialidade=None):
             data = f'{name};{cpf};{crm};{especialidade}'
             cadastro_dados_sock.sendall(data.encode())
             print(name, cpf, user_type, crm, especialidade)
-            """cadastro_dados_sock.sendall(name.encode())
-            cadastro_dados_sock.sendall(cpf.encode())
-            cadastro_dados_sock.sendall(user_type.encode())
-            cadastro_dados_sock.sendall(crm.encode())
-            cadastro_dados_sock.sendall(especialidade.encode())"""
         
         # Retorna a resposta adequada para o cliente
-        response = "Cadastro de médico realizado com sucesso!"
-        return response
+            response = cadastro_dados_sock.recv(1024).decode().strip()
+            return response
     else:
         # Tipo de usuário inválido
         response = "Tipo de usuário inválido."
@@ -84,9 +78,9 @@ def microsservico_validador(name, cpf):
         return response
 
 def receber_dados_cadastro(connection_client):
-    # Envia uma mensagem de confirmação para o cliente
+    """# Envia uma mensagem de confirmação para o cliente
     confirmation_msg = "Envie os dados de cadastro."
-    connection_client.sendall(confirmation_msg.encode())
+    connection_client.sendall(confirmation_msg.encode())"""
 
     # Recebe os dados de cadastro do cliente
     name = connection_client.recv(1024).decode().strip()
@@ -105,10 +99,10 @@ def receber_dados_cadastro(connection_client):
     else:
         response = microsservico_cadastro(name, cpf, user_type)
     
-    return response
+    #return response
 
     # Processa os dados de cadastro
-    response = microsservico_cadastro(name, cpf, user_type, crm=None, especialidade=None)
+    #response = microsservico_cadastro(name, cpf, user_type, crm=None, especialidade=None)
     """microservico_cadastro(name, cpf, user_type)
     connection_client.sendall(response.encode())"""
 

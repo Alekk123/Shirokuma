@@ -49,7 +49,7 @@ def enviar_dados_cadastro(name, cpf):
         especialidade = None
     # Recebe a resposta do servidor sobre o sucesso do cadastro
     response = client_socket.recv(2048).decode().strip()
-    print(response)
+    print(f'ta enxergando essa response ? {response}')
 
     # Verifica se o cadastro foi realizado com sucesso
     if 'Cadastro realizado' in response:
@@ -106,6 +106,10 @@ def input_data():
             response = enviar_dados_cadastro(name, cpf)
             print(response)
             return
+        elif 'CPF válido e usuário encontrado (paciente)!'in response:
+            print(response)
+        elif 'CPF válido e usuário encontrado (médico)!' in response:
+            print(response)
 
 # Executa a função para inserção de dados do cliente
 input_data()

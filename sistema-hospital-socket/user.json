@@ -1,18 +1,18 @@
 {
-    "medicos": [
-      {
-        "nome": "Jorge Lira",
-        "cpf": "72974986455",
-        "funcao": 1,
-        "crm": "1234435SP"
-      }
-    ],
-    "pacientes": [
-      {
-        "nome": "Marcos Trindade",
-        "cpf": "22856690890",
-        "funcao": 2,
-        "crm": ""
-      }
-    ]
-  }
+  "medicos": [
+    {
+      "nome": "Jorge Lira",
+      "cpf": "72974986455",
+      "funcao": 2,
+      "crm": "1234435SP",
+      "especialidade": "Neurologista"
+    }
+  ],
+  "pacientes": [
+    {
+      "nome": "Marcos Trindade",
+      "cpf": "22856690890",
+      "funcao": 1
+    }
+  ]
+}
