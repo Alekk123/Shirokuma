@@ -14,6 +14,51 @@ print('Conexão estabelecida com o servidor principal.', PORT)
 msg_inicial = client_socket.recv(2048).decode().strip()
 print(msg_inicial)
 
+def enviar_dados_cadastro(name, cpf):
+    confirmation_msg = 'Favor confirme seu nome abaixo, está correto?\n '
+    print(confirmation_msg)
+    print(f'Nome = {name}\nCPF = {cpf}\n')
+    while True:
+        confimacao = input("Digite SIM ou NÃO para confirmar\n>").upper()
+        if confimacao == 'SIM' or confimacao == 'S':
+            client_socket.sendall(name.encode())
+            client_socket.sendall(cpf.encode())
+            break
+        elif confimacao == 'NÃO' or confimacao == 'NAO' or confimacao == 'N':
+            name = input ('Favor digite seu nome novamentez\n>')
+            client_socket.sendall(name.encode())
+            client_socket.sendall(cpf.encode())
+            break
+        else: 
+            print("Opção inválida. Por favor, escolha novamente.")
+
+    
+    user_type = input("Digite o tipo de usuário (1 - Paciente, 2 - Médico): ")
+    client_socket.sendall(user_type.encode())
+
+    # Verifica se o tipo de usuário é médico
+    if user_type == '2':
+        password = input("Digite a senha: ")
+        client_socket.sendall(password.encode())
+        crm = input("\nDigite o CRM: ")
+        client_socket.sendall(crm.encode())
+        especialidade = input('Digite a especialidade: ')
+        client_socket.sendall(especialidade.encode())
+
+    # Recebe a resposta do servidor sobre o sucesso do cadastro
+    response = client_socket.recv(2048).decode().strip()
+    print(response)
+
+    # Verifica se o cadastro foi realizado com sucesso
+    if 'Cadastro realizado' in response:
+        print("Cadastro realizado com sucesso!")
+        # Continue com as operações adicionais que desejar
+    else:
+        print("Falha ao realizar o cadastro. Tente novamente.")
+
+    return response
+    # Fecha a conexão com o servidor
+    # client_socket.close()
 
 def input_data():   
         name = input("Nome completo: ")
@@ -40,11 +85,9 @@ def input_data():
                     response = client_socket.recv(2048).decode().strip()
                     print(response)
 
-
-                    if decision == 'CPF válido!':
-                        # Cliente validado com sucesso
-                        print("Usuário validado!")
-                        #client_socket.sendall(validation_result.encode())
+                    if 'CPF válido, porém usuário não encontrado' in response:
+                        response = enviar_dados_cadastro(name, cpf)
+                        print(response)
                         break
                     
                 elif decision == '2':
@@ -53,57 +96,23 @@ def input_data():
                     print("Encerrando conexão.")
                     return
                 else:
-                     print("Opção inválida. Por favor, escolha novamente.")
+                    """response = client_socket.recv(1024).decode().strip()
+                    print(response)
+                    if 'CPF válido, porém usuário não encontrado' in response:
+                        response = enviar_dados_cadastro()
+                        client_socket.sendall(response.encode())"""
+                    break
 
         # Verifica se a resposta indica que o CPF é válido
         elif 'CPF válido, porém usuário não encontrado' in response:
-            #print("CPF válido, porém usuário não encontrado. Favor realizar cadastro!")
-            response = enviar_dados_cadastro(name, cpf, client_socket)
+
+            #client_socket.sendall(response.encode())
+            response = enviar_dados_cadastro(name, cpf)
             print(response)
             return
 
 
-def enviar_dados_cadastro(name, cpf, client_socket):
-    confirmation_msg = 'Favor confirme seu nome abaixo, está correto?\n '
-    print(confirmation_msg)
-    print(f'Nome = {name}\nCPF = {cpf}\n')
-    while True:
-        confimacao = input("Digite SIM ou NÃO para confirmar\n>").upper()
-        if confimacao == 'SIM' or confimacao == 'S':
-            client_socket.sendall(name.encode())
-            client_socket.sendall(cpf.encode())
-            break
-        elif confimacao == 'NÃO' or confimacao == 'NAO' or confimacao == 'N':
-            name = input ('Favor digite seu nome novamentez\n>')
-            client_socket.sendall(name.encode())
-            client_socket.sendall(cpf.encode())
-            break
-        else: 
-            print("Opção inválida. Por favor, escolha novamente.")
 
-    while True:
-        user_type = input("Digite o tipo de usuário (1 - Paciente, 2 - Médico): ")
-        if user_type in ['1', '2']:
-            break
-        else:
-            print("Opção inválida. Por favor, escolha novamente.")
-
-        client_socket.sendall(user_type.encode())
-
-        # Recebe a resposta do servidor sobre o sucesso do cadastro
-        response = client_socket.recv(2048).decode().strip()
-        print(response)
-
-        # Verifica se o cadastro foi realizado com sucesso
-        if 'Cadastro realizado' in response:
-            print("Cadastro realizado com sucesso!")
-            # Continue com as operações adicionais que desejar
-        else:
-            print("Falha ao realizar o cadastro. Tente novamente.")
-
-        return response
-        # Fecha a conexão com o servidor
-        # client_socket.close()
 
 # Executa a função para inserção de dados do cliente
 input_data()
