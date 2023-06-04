@@ -6,17 +6,19 @@
       "funcao": 2,
       "crm": "1234435SP",
       "especialidade": "Neurologista"
+    },
+    {
+      "nome": "bruna",
+      "cpf": "47558880858",
+      "funcao": 2,
+      "crm": "654",
+      "especialidade": "paulista"
     }
   ],
   "pacientes": [
     {
       "nome": "Marcos Trindade",
       "cpf": "22856690890",
-      "funcao": 1
-    },
-    {
-      "nome": "bruna",
-      "cpf": "47558880858",
       "funcao": 1
     }
   ]
