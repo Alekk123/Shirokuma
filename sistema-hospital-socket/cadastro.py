@@ -29,20 +29,22 @@ while True:
         client_data = conn.recv(1024).decode().strip()
         name, cpf = client_data.split(';')
         print(f'Dados recebidos: Nome = {name}, CPF = {cpf}, tipo = {user_type}')
+        response = 'Paciente cadastrado com sucesso'
+        conn.sendall(response.encode())
 
         data['pacientes'].append({
             'nome': name,
             'cpf': cpf,
             'funcao': int(user_type),
         })
-        response = 'Paciente cadastrado com sucesso'
-        #conn.sendall(response.encode())
+ 
 
     elif user_type == '2':
         client_data = conn.recv(1024).decode().strip()
         name, cpf, crm, especialidade = client_data.split(';')
         print(f'Dados recebidos: Nome = {name}, CPF = {cpf}, tipo = {user_type}, crm = {crm}, especialidade = {especialidade}')
-    
+        response = 'Médico cadastrado com sucesso'
+        conn.sendall(response.encode())
         data['medicos'].append({
             'nome': name,
             'cpf': cpf,
@@ -50,7 +52,6 @@ while True:
             'crm': crm,
             'especialidade': especialidade
         })
-        response = 'Médico cadastrado com sucesso'
         
     #conn.sendall(response.encode())
 

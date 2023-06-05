@@ -17,7 +17,8 @@ while True:
     conn, addr = s.accept()
     print(f'Conectado por {addr}')
 
-    # ...lógica do microsserviço para processar a requisição
+    data = conn.recv(1024).decode().strip()
+    name, cpf = data.split(';')
 
     # Fecha a conexão
     conn.close()

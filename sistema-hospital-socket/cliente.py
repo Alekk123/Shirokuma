@@ -40,7 +40,9 @@ def enviar_dados_cadastro(name, cpf):
     if user_type == '2':
         password = input("Digite a senha: ")
         client_socket.sendall(password.encode())
-        crm = input("\nDigite o CRM: ")
+        crm_cadastro = client_socket.recv(2048).decode().strip()
+        print(crm_cadastro)
+        crm = input(">")
         client_socket.sendall(crm.encode())
         especialidade = input('Digite a especialidade: ')
         client_socket.sendall(especialidade.encode())
@@ -52,11 +54,14 @@ def enviar_dados_cadastro(name, cpf):
     print(f'ta enxergando essa response ? {response}')
 
     # Verifica se o cadastro foi realizado com sucesso
-    if 'Cadastro realizado' in response:
-        print("Cadastro realizado com sucesso!")
+    if 'Paciente cadastrado com sucesso' in response:
+        response = 'Paciente cadastrado com sucesso!'
         # Continue com as operações adicionais que desejar
+    
+    elif 'Médico cadastrado com sucesso' in response:
+        response = 'Médico cadastrado com sucesso'
     else:
-        print("Falha ao realizar o cadastro. Tente novamente.")
+        response = 'Falha ao realizar o cadastro. Tente novamente.'
 
     return response
     # Fecha a conexão com o servidor
@@ -70,7 +75,7 @@ def input_data():
 
         # Recebe a resposta do servidor sobre validação dos dados
         response = client_socket.recv(2048).decode().strip()
-        print(response) #ok
+        #print(response) #ok
     
         # Verifica se a resposta indica que os dados são inválidos
         if 'CPF inválido' in response:
@@ -107,9 +112,26 @@ def input_data():
             print(response)
             return
         elif 'CPF válido e usuário encontrado (paciente)!'in response:
+            print(f'Bem-vindo(a) ao sistema {name}\nQual serviço deseja executar?\nDigite o número correspondente ao serviço desejado\n1. Agendar Consulta\n2. Verificar Consultar Agendadadas\n')
+            while True:
+                opcao = input('>')
+                if opcao == '1': # agendar consulta
+                    client_socket.sendall(opcao.encode())
+                    print('Favor')
+                    
+                if opcao == '2': #mostrar vericar
+                    
+                    client_socket.sendall(opcao.encode())
+                else:
+                    print('Opção Inválida, Tente Novamente\n')
+                    
+
             print(response)
         elif 'CPF válido e usuário encontrado (médico)!' in response:
             print(response)
+            print(f"Bem vindo ao sistema Dre. {name}\n Aqui estão as suas consultas marcadas:\n")
+            opcao = 1
+            client_socket.sendall(opcao.encode())
 
 # Executa a função para inserção de dados do cliente
 input_data()
