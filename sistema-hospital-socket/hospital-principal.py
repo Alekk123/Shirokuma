@@ -23,8 +23,8 @@ cadastro_dados_sock.connect((CADASTRO_HOST, CADASTRO_PORT))
 GERENCIAMENTO_AGENDA_HOST = 'localhost'
 GERENCIAMENTO_AGENDA_PORT = 5002
 # Conecta com o microserviço de gerenciamento de agenda
-gerenciamento_agenda_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-gerenciamento_agenda_sock.connect((GERENCIAMENTO_AGENDA_HOST, GERENCIAMENTO_AGENDA_PORT))
+"""gerenciamento_agenda_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+gerenciamento_agenda_sock.connect((GERENCIAMENTO_AGENDA_HOST, GERENCIAMENTO_AGENDA_PORT))"""
 
 
 # Cria o socket do servidor principal
@@ -77,7 +77,7 @@ def microsservico_validador(name, cpf):
 
         return response
 
-def microsservico_agenda(cpf, user_type, date=None):
+"""def microsservico_agenda(cpf, user_type, date=None):
     # Envia os dados da agenda para o microserviço de gerenciamento de agenda
     data = f'{cpf};{user_type};{date}'
     gerenciamento_agenda_sock.sendall(data.encode())
@@ -85,7 +85,7 @@ def microsservico_agenda(cpf, user_type, date=None):
     # Recebe resposta do microserviço de gerenciamento de agenda
     response = gerenciamento_agenda_sock.recv(1024).decode().strip()
     
-    return response
+    return response"""
 
 def receber_dados_cadastro(connection_client):
     # Recebe os dados de cadastro do cliente
@@ -95,23 +95,25 @@ def receber_dados_cadastro(connection_client):
     print(f'{name}\n{cpf}\n{user_type}\n')
     
     if user_type == '2':
-        # Recebe os dados adicionais para o cadastro de médico
-        password = connection_client.recv(1024).decode().strip()
-        with open('senha.txt', 'r') as file:
-            senha_sistema = file.readline()
-            senha_sistema = senha_sistema.rstrip('\n')
-        if password == senha_sistema: 
-            askCRM = ("Digite o seu CRM\n")
-            connection_client.sendall(askCRM.encode())
-            crm = connection_client.recv(1024).decode().strip()
-            especialidade = connection_client.recv(1024).decode().strip()
-            print (password, crm, especialidade)
-            response = microsservico_cadastro(name, cpf, user_type, crm, especialidade)
-            connection_client.sendall(response.encode())
-            return response
-        else:
-            senhaInvalid = ("Senha incorreta")
-            connection_client.sendall(senhaInvalid.encode())
+        while True:
+            # Recebe os dados adicionais para o cadastro de médico
+            password = connection_client.recv(1024).decode().strip()
+            with open('senha.txt', 'r') as file:
+                senha_sistema = file.readline()
+                senha_sistema = senha_sistema.rstrip('\n')
+            if password == senha_sistema: 
+                askCRM = ("Digite o seu CRM\n")
+                connection_client.sendall(askCRM.encode())
+                crm = connection_client.recv(1024).decode().strip()
+                especialidade = connection_client.recv(1024).decode().strip()
+                print (password, crm, especialidade)
+                response = microsservico_cadastro(name, cpf, user_type, crm, especialidade)
+                connection_client.sendall(response.encode())
+                return response
+            else:
+                senhaInvalid = ("Senha incorreta")
+                connection_client.sendall(senhaInvalid.encode())
+                
     else:
         response = microsservico_cadastro(name, cpf, user_type)
         

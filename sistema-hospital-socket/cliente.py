@@ -38,14 +38,20 @@ def enviar_dados_cadastro(name, cpf):
 
     # Verifica se o tipo de usuário é médico
     if user_type == '2':
-        password = input("Digite a senha: ")
-        client_socket.sendall(password.encode())
-        crm_cadastro = client_socket.recv(2048).decode().strip()
-        print(crm_cadastro)
-        crm = input(">")
-        client_socket.sendall(crm.encode())
-        especialidade = input('Digite a especialidade: ')
-        client_socket.sendall(especialidade.encode())
+        while True:
+            password = input("Digite a senha: ")
+            client_socket.sendall(password.encode())
+            crm_cadastro = client_socket.recv(2048).decode().strip()
+            if crm_cadastro == 'Digite o seu CRM':
+                print(crm_cadastro)
+                crm = input(">")
+                client_socket.sendall(crm.encode())
+                especialidade = input('Digite a especialidade: ')
+                client_socket.sendall(especialidade.encode())
+                break
+            else:
+                print(crm_cadastro)
+                
     else:
         crm = None
         especialidade = None
