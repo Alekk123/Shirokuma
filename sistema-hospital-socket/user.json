@@ -6,12 +6,39 @@
       "funcao": 2,
       "crm": "1234435SP",
       "especialidade": "Neurologista"
+    },
+    {
+      "nome": "Gustavo",
+      "cpf": "56803287807",
+      "funcao": 2,
+      "crm": "123456SP",
+      "especialidade": "Ortopedia"
     }
   ],
   "pacientes": [
     {
       "nome": "Marcos Trindade",
       "cpf": "22856690890",
+      "funcao": 1
+    },
+    {
+      "nome": "Silvio Santos",
+      "cpf": "61586075098",
+      "funcao": 1
+    },
+    {
+      "nome": "Luiza Medeiros",
+      "cpf": "77334614054",
+      "funcao": 1
+    },
+    {
+      "nome": "Girafales",
+      "cpf": "33932947843",
+      "funcao": 1
+    },
+    {
+      "nome": "Jorge",
+      "cpf": "30146919092",
       "funcao": 1
     }
   ]

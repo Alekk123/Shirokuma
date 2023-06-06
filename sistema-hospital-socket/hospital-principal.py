@@ -23,8 +23,8 @@ cadastro_dados_sock.connect((CADASTRO_HOST, CADASTRO_PORT))
 GERENCIAMENTO_AGENDA_HOST = 'localhost'
 GERENCIAMENTO_AGENDA_PORT = 5002
 # Conecta com o microserviço de gerenciamento de agenda
-"""gerenciamento_agenda_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-gerenciamento_agenda_sock.connect((GERENCIAMENTO_AGENDA_HOST, GERENCIAMENTO_AGENDA_PORT))"""
+gerenciamento_agenda_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+gerenciamento_agenda_sock.connect((GERENCIAMENTO_AGENDA_HOST, GERENCIAMENTO_AGENDA_PORT))
 
 
 # Cria o socket do servidor principal
@@ -76,16 +76,16 @@ def microsservico_validador(name, cpf):
         response = validador_dados_sock.recv(1024).decode().strip()
 
         return response
-
-"""def microsservico_agenda(cpf, user_type, date=None):
-    # Envia os dados da agenda para o microserviço de gerenciamento de agenda
-    data = f'{cpf};{user_type};{date}'
-    gerenciamento_agenda_sock.sendall(data.encode())
     
+def microsservico_agenda(cpf, user_type, decision_task, date=None):
+    # Envia os dados da agenda para o microserviço de gerenciamento de agenda
+    data = f'{cpf};{user_type};{decision_task};{date}'
+    gerenciamento_agenda_sock.sendall(data.encode())
     # Recebe resposta do microserviço de gerenciamento de agenda
     response = gerenciamento_agenda_sock.recv(1024).decode().strip()
     
-    return response"""
+    return response
+
 
 def receber_dados_cadastro(connection_client):
     # Recebe os dados de cadastro do cliente
@@ -123,10 +123,6 @@ def receber_dados_cadastro(connection_client):
     return response
     # Fecha a conexão com o cliente
     #connection_client.close()
-
-
-
-
 
 
 
@@ -178,17 +174,29 @@ def handle_client_connection(connection_client):
         opcao = connection_client.recv(1024).decode().strip()
         print(opcao)
         if opcao == '1':
-            print('sers')
+            user_type = 1
+            date = connection_client.recv(1024).decode().strip()
+            microsservico_agenda(cpf, user_type, opcao, date)
         else:
-            print('awjb')
+            user_type = 1
+            response = microsservico_agenda(cpf, user_type, opcao, date =None)
+            connection_client.sendall(response.encode())
         #connection_client.recv(1024).decode().strip()
     elif 'CPF válido e usuário encontrado (médico)!' in response:
         connection_client.sendall(response.encode())
+        oimedico = connection_client.recv(1024).decode().strip()
 
+#        dados_usuario = consulta_db(cpf)
+        user_type = 2
+        print(user_type)
+
+        opcao = oimedico
+        print(opcao)
+
+        response = microsservico_agenda(cpf, user_type, opcao, date = None)
+        connection_client.sendall(response.encode())
         #continuação das funções do médico
         #recebe decisão do médico
-    consulta = connection_client.recv(1024).decode().strip()
-    print(consulta)
 
     
 while True:
