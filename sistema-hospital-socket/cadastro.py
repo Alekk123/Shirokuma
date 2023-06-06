@@ -13,22 +13,49 @@ s.listen()
 
 print('Cadastro iniciado e esperando por conexões.')
 
+with open('user.json', 'r') as file:
+    data = json.load(file)
+
 while True:
     # Espera por uma conexão
     conn, addr = s.accept()
     print(f'Conectado por {addr}')
 
     # Recebe os dados do cliente
-    data = conn.recv(1024).decode().strip()
     print('recebendo')
-    nome, cpf, data_nasc = data.split(',')
 
-    print(f'Dados recebidos: Nome={nome}, CPF={cpf}, Data de Nascimento={data_nasc}')
+    user_type = conn.recv(1024).decode().strip()
+    if user_type == '1':
+        client_data = conn.recv(1024).decode().strip()
+        name, cpf = client_data.split(';')
+        print(f'Dados recebidos: Nome = {name}, CPF = {cpf}, tipo = {user_type}')
+        response = 'Paciente cadastrado com sucesso'
+        conn.sendall(response.encode())
 
-    # Realiza o processamento dos dados do cliente, como salvar no banco de dados
+        data['pacientes'].append({
+            'nome': name,
+            'cpf': cpf,
+            'funcao': int(user_type),
+        })
+ 
 
-    # Envia uma resposta ao servidor principal
-    response = 'Dados recebidos e processados com sucesso!'
-    conn.sendall(response.encode())
+    elif user_type == '2':
+        client_data = conn.recv(1024).decode().strip()
+        name, cpf, crm, especialidade = client_data.split(';')
+        print(f'Dados recebidos: Nome = {name}, CPF = {cpf}, tipo = {user_type}, crm = {crm}, especialidade = {especialidade}')
+        response = 'Médico cadastrado com sucesso'
+        conn.sendall(response.encode())
+        data['medicos'].append({
+            'nome': name,
+            'cpf': cpf,
+            'funcao': int(user_type),
+            'crm': crm,
+            'especialidade': especialidade
+        })
+        
+    #conn.sendall(response.encode())
+
+    with open('user.json', 'w') as file:
+        json.dump(data, file, indent=2)
     
-    conn.close() 
+    #conn.close() 

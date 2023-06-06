@@ -65,7 +65,22 @@ while True:
 
         # Valida o CPF
         if valida_cpf(cpf):
-            response = 'CPF válido!'
+            with open('user.json', 'r') as file:
+                usuarios = json.load(file)
+
+                # Verifica se o CPF está presente nos dados de pacientes
+                for paciente in usuarios['pacientes']:
+                    if cpf == paciente['cpf']:
+                        response = 'CPF válido e usuário encontrado (paciente)!'
+                        break
+                else:
+                    # Verifica se o CPF está presente nos dados de médicos
+                    for medico in usuarios['medicos']:
+                        if cpf == medico['cpf']:
+                            response = 'CPF válido e usuário encontrado (médico)!'
+                            break
+                    else:
+                        response = 'CPF válido, porém usuário não encontrado. Favor realizar cadastro!\n'
         else:
             response = 'CPF inválido!'
 

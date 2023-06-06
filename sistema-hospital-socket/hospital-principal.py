@@ -1,15 +1,9 @@
 import socket
+import json
 
 # Configurações do servidor principal
 HOST = 'localhost'
 PORT = 5000
-
-# Configurações dos microserviços
-GERENCIAMENTO_AGENDA_HOST = 'localhost'
-GERENCIAMENTO_AGENDA_PORT = 5002
-
-CADASTRO_HOST = 'localhost'
-CADASTRO_PORT = 5003
 
 #Configurações conexão com o microsserviço de validação
 VALIDADOR_HOST = 'localhost'
@@ -19,6 +13,21 @@ validador_dados_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 # Conecta com o microserviço de validador de dados
 validador_dados_sock.connect((VALIDADOR_HOST, VALIDADOR_PORT))
 
+# Configurações conexão com o microsserviço de cadastro
+CADASTRO_HOST = 'localhost'
+CADASTRO_PORT = 5003
+# Criação do socket cadastro
+cadastro_dados_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+cadastro_dados_sock.connect((CADASTRO_HOST, CADASTRO_PORT))
+
+# Configurações de conexão do microserviço de agenda
+GERENCIAMENTO_AGENDA_HOST = 'localhost'
+GERENCIAMENTO_AGENDA_PORT = 5002
+# Conecta com o microserviço de gerenciamento de agenda
+gerenciamento_agenda_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+gerenciamento_agenda_sock.connect((GERENCIAMENTO_AGENDA_HOST, GERENCIAMENTO_AGENDA_PORT))
+
+
 # Cria o socket do servidor principal
 sock_hosp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -27,105 +36,185 @@ sock_hosp.bind((HOST, PORT))
 
 # Define o número máximo de conexões simultâneas
 sock_hosp.listen(5)
-
-
-
-# Conecta com o microserviço de gerenciamento de agenda
-"""gerenciamento_agenda_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-gerenciamento_agenda_sock.connect((GERENCIAMENTO_AGENDA_HOST, GERENCIAMENTO_AGENDA_PORT))"""
-
-# Conecta com o microserviço de cadastro de pacientes
-"""cadastro_pacientes_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-cadastro_pacientes_sock.connect((CADASTRO_HOST, CADASTRO_PORT))"""
+def microsservico_cadastro(name, cpf, user_type, crm=None, especialidade=None):
+    print('chegou aqui bobona')
+    # Verifica o tipo de usuário
+    if user_type == '1':
+        cadastro_dados_sock.sendall(user_type.encode())
+        data = f'{name};{cpf}'
+        print(name, cpf, user_type)
+        cadastro_dados_sock.sendall(data.encode())
+        # Retorna a resposta adequada para o cliente
+        response = cadastro_dados_sock.recv(1024).decode().strip()
+        return response
+    elif user_type == '2':
+        # Cadastro de médico
+        if crm is None or especialidade is None:
+            # Caso os dados adicionais (CRM e especialidade) não tenham sido fornecidos
+            response = "Dados adicionais (CRM e especialidade) não foram fornecidos."
+            return response
+        else:
+            cadastro_dados_sock.sendall(user_type.encode())
+            data = f'{name};{cpf};{crm};{especialidade}'
+            cadastro_dados_sock.sendall(data.encode())
+            print(name, cpf, user_type, crm, especialidade)
+        
+        # Retorna a resposta adequada para o cliente
+            response = cadastro_dados_sock.recv(1024).decode().strip()
+            return response
+    else:
+        # Tipo de usuário inválido
+        response = "Tipo de usuário inválido."
+        return response
 
 def microsservico_validador(name, cpf):
     while True:
         data = f'{name};{cpf}'
+         #Envia dados para o validador
         validador_dados_sock.sendall(data.encode())
-        #Envia dados para o validador
-        #validador_dados_sock.sendall(name.encode())
-        #validador_dados_sock.sendall(cpf.encode())
+       
         #Recebe resposta do validador
         response = validador_dados_sock.recv(1024).decode().strip()
 
-        # Fecha a conexão com o microsserviço de validação
-        #validador_dados_sock.close()
-
         return response
 
+def microsservico_agenda(cpf, user_type, decision_task, date):
+    # Envia os dados da agenda para o microserviço de gerenciamento de agenda
+    data = f'{cpf};{user_type};{decision_task};{date}'
+    gerenciamento_agenda_sock.sendall(data.encode())
+    # Recebe resposta do microserviço de gerenciamento de agenda
+    response = gerenciamento_agenda_sock.recv(1024).decode().strip()
+    
+    return response
 
-"""def microsservico_gerenciamento():
-    return
-def microservico_cadastro():
-    return"""
+def consulta_db(cpf):
+    with open('user.json', 'r') as file:
+        linhas = file.readlines()
+
+    for linha in linhas:
+        dados = json.loads(linha)
+        bd_nome = dados['nome']
+        bd_cpf = dados['cpf']
+        bd_funcao = dados['funcao']
+        bd_crm = dados.get('crm', None)
+
+        if bd_cpf == cpf:
+            return dados
+
+def receber_dados_cadastro(connection_client):
+    # Recebe os dados de cadastro do cliente
+    name = connection_client.recv(1024).decode().strip()
+    cpf = connection_client.recv(1024).decode().strip()
+    user_type = connection_client.recv(1024).decode().strip()
+    print(f'{name}\n{cpf}\n{user_type}\n')
+    
+    if user_type == '2':
+        # Recebe os dados adicionais para o cadastro de médico
+        password = connection_client.recv(1024).decode().strip()
+        with open('senha.txt', 'r') as file:
+            senha_sistema = file.readline()
+            senha_sistema = senha_sistema.rstrip('\n')
+        if password == senha_sistema: 
+            askCRM = ("Digite o seu CRM\n")
+            connection_client.sendall(askCRM.encode())
+            crm = connection_client.recv(1024).decode().strip()
+            especialidade = connection_client.recv(1024).decode().strip()
+            print (password, crm, especialidade)
+            response = microsservico_cadastro(name, cpf, user_type, crm, especialidade)
+            connection_client.sendall(response.encode())
+            return response
+        else:
+            senhaInvalid = ("Senha incorreta")
+            connection_client.sendall(senhaInvalid.encode())
+    else:
+        response = microsservico_cadastro(name, cpf, user_type)
+        
+    connection_client.sendall(response.encode())
+    print(response)
+
+    return response
+    # Fecha a conexão com o cliente
+    #connection_client.close()
 
 # Função para lidar com a conexão do cliente
-def connection_client(connection_client):
+def handle_client_connection(connection_client):
     #msg_inicial de escolha
     msg_inicial = ('Bem-vindo(a), para dar continuidade aos nossos serviços por favor informe nome completo e CPF, mesmo que não tenha cadastro conosco\n')
     #envia msg pro cliente
     connection_client.sendall(msg_inicial.encode())
+
     # Recebe as informações do cliente
     name = connection_client.recv(1024).decode().strip()
-    print(name)
     cpf = connection_client.recv(1024).decode().strip()
     print(f'Conexão com = {name}\nCPF = {cpf}')
 
     # Valide o CPF e envie a resposta para o cliente
-    if microsservico_validador(name, cpf) == 'CPF válido!':
-        response = 'CPF válido!'
-        connection_client.sendall(response.encode())
-    else:
-        response = 'CPF inválido!'
-        connection_client.sendall(response.encode())
-
+    response = microsservico_validador(name, cpf)
+    print(response)
     #connection_client.sendall(response.encode())
 
-    # Lida com a escolha do cliente
-    while True:
-        choice = connection_client.recv(1024).decode().strip()
-        if choice == '1': # Cliente escolheu tentar novamente
-            name = connection_client.recv(1024).decode().strip()
-            cpf = connection_client.recv(1024).decode().strip()
-            print(f'Nova conexão com {name}\nCPF = {cpf}')
-            response = microsservico_validador(name, cpf)
-            
-            #response = validador_dados_sock.recv(1024).decode().strip()
-            print(response)
+    if response == 'CPF inválido!':
+        connection_client.sendall(response.encode())
+        # Lida com a escolha do cliente
+        while True:
+            choice = connection_client.recv(1024).decode().strip()
+            if choice == '1': # Cliente escolheu tentar novamente
+                name = connection_client.recv(1024).decode().strip()
+                cpf = connection_client.recv(1024).decode().strip()
+                print(f'Nova conexão com {name}\nCPF = {cpf}')
 
-            # Envia a resposta para o cliente
+                response = microsservico_validador(name, cpf)
+                print(response)
+                # Envia a resposta para o cliente
+                connection_client.sendall(response.encode())
+
+            elif choice == '2':
+                # Cliente escolheu encerrar conexão
+                break
+            elif 'CPF válido, porém usuário não encontrado' in choice:
+                # Inicia o processo de cadastro automaticamente
+                response = receber_dados_cadastro(connection_client)
+                #connection_client.sendall(response.encode())
+                break
+    elif response == 'CPF válido, porém usuário não encontrado. Favor realizar cadastro!':
+        connection_client.sendall(response.encode())
+        receber_dados_cadastro(connection_client)
+    elif'CPF válido e usuário encontrado (paciente)!'in response:
+        #connection_client.sendall(response.encode())
+        #opcao = connection_client.recv(1024).decode().strip()
+        opcao = "1"
+        print(opcao)
+        if opcao == '1':
+            print('sers')
+            dados_usuario = consulta_db(cpf)
+            user_type = dados_usuario['funcao']
             connection_client.sendall(response.encode())
-
-            # Valide o novo CPF e envie a resposta para o cliente
-            """if microsservico_validador(name, cpf):
-                response = 'CPF válido!'
-            else:
-                response = 'CPF inválido!'
-
-            connection_client.sendall(response.encode())"""
-            
-        elif choice == '2':
-            # Cliente escolheu realizar cadastro
-            connection_client.sendall('OK'.encode())
-            # Outras ações relacionadas ao cadastro
-            break
-        elif choice == '3':
-            # Cliente escolheu encerrar conexão
-            break
+            date = connection_client.recv(1024).decode().strip()
+            microsservico_agenda(cpf, user_type, opcao, date)
         else:
-            # Opção inválida
-            invalid_option = "Opção inválida. Por favor, escolha novamente."
+            print('awjb')
+            dados_usuario = consulta_db(cpf)
+            user_type = dados_usuario['funcao']
+            microsservico_agenda(cpf, user_type, opcao, date = None)
+        #connection_client.recv(1024).decode().strip()
+    elif 'CPF válido e usuário encontrado (médico)!' in response:
+        #connection_client.sendall(response.encode())
+        dados_usuario = consulta_db(cpf)
+        user_type = dados_usuario['funcao']     
+        microsservico_agenda(cpf, user_type, opcao = None, date = None)
+        #continuação das funções do médico
+        #recebe decisão do médico
+    consulta = connection_client.recv(1024).decode().strip()
+    print(consulta)
 
-
-#def start_server():
-
+    
 while True:
     # Espera por uma nova conexão
     cliente_socket, addr = sock_hosp.accept()
     print(f'Conexão estabelecida com {addr}')
 
     # Trata a conexão do cliente
-    connection_client(cliente_socket)
+    handle_client_connection(cliente_socket)
 
 
 

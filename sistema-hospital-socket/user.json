@@ -1,0 +1,32 @@
+{
+  "medicos": [
+    {
+      "nome": "Jorge Lira",
+      "cpf": "72974986455",
+      "funcao": 2,
+      "crm": "1234435SP",
+      "especialidade": "Neurologista"
+    },
+    {
+      "nome": "marcos",
+      "cpf": "15113688886",
+      "funcao": 2,
+      "crm": "4564",
+      "especialidade": "toba"
+    },
+    {
+      "nome": "Gustavo",
+      "cpf": "56803287807",
+      "funcao": 2,
+      "crm": "123456SP",
+      "especialidade": "urologia"
+    }
+  ],
+  "pacientes": [
+    {
+      "nome": "Marcos Trindade",
+      "cpf": "22856690890",
+      "funcao": 1
+    }
+  ]
+}
