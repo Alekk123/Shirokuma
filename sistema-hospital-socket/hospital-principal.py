@@ -78,7 +78,7 @@ def microsservico_validador(name, cpf):
 
         return response
 
-def microsservico_agenda(cpf, user_type, decision_task, date):
+def microsservico_agenda(cpf, user_type, decision_task, date=None):
     # Envia os dados da agenda para o microserviço de gerenciamento de agenda
     data = f'{cpf};{user_type};{decision_task};{date}'
     gerenciamento_agenda_sock.sendall(data.encode())
@@ -87,19 +87,15 @@ def microsservico_agenda(cpf, user_type, decision_task, date):
     
     return response
 
-def consulta_db(cpf):
+"""def consulta_db(cpf):
     with open('user.json', 'r') as file:
-        linhas = file.readlines()
+        dados_usuarios = json.load(file)
 
-    for linha in linhas:
-        dados = json.loads(linha)
-        bd_nome = dados['nome']
-        bd_cpf = dados['cpf']
-        bd_funcao = dados['funcao']
-        bd_crm = dados.get('crm', None)
+    for dados in dados_usuarios.values():
+        if dados['cpf'] == cpf:
+            return dados#['user_type']
 
-        if bd_cpf == cpf:
-            return dados
+    return None"""
 
 def receber_dados_cadastro(connection_client):
     # Recebe os dados de cadastro do cliente
@@ -109,23 +105,24 @@ def receber_dados_cadastro(connection_client):
     print(f'{name}\n{cpf}\n{user_type}\n')
     
     if user_type == '2':
-        # Recebe os dados adicionais para o cadastro de médico
-        password = connection_client.recv(1024).decode().strip()
-        with open('senha.txt', 'r') as file:
-            senha_sistema = file.readline()
-            senha_sistema = senha_sistema.rstrip('\n')
-        if password == senha_sistema: 
-            askCRM = ("Digite o seu CRM\n")
-            connection_client.sendall(askCRM.encode())
-            crm = connection_client.recv(1024).decode().strip()
-            especialidade = connection_client.recv(1024).decode().strip()
-            print (password, crm, especialidade)
-            response = microsservico_cadastro(name, cpf, user_type, crm, especialidade)
-            connection_client.sendall(response.encode())
-            return response
-        else:
-            senhaInvalid = ("Senha incorreta")
-            connection_client.sendall(senhaInvalid.encode())
+        while True:
+            # Recebe os dados adicionais para o cadastro de médico
+            password = connection_client.recv(1024).decode().strip()
+            with open('senha.txt', 'r') as file:
+                senha_sistema = file.readline()
+                senha_sistema = senha_sistema.rstrip('\n')
+            if password == senha_sistema: 
+                askCRM = ("Digite o seu CRM\n")
+                connection_client.sendall(askCRM.encode())
+                crm = connection_client.recv(1024).decode().strip()
+                especialidade = connection_client.recv(1024).decode().strip()
+                print (password, crm, especialidade)
+                response = microsservico_cadastro(name, cpf, user_type, crm, especialidade)
+                connection_client.sendall(response.encode())
+                return response
+            else:
+                senhaInvalid = ("Senha incorreta")
+                connection_client.sendall(senhaInvalid.encode())
     else:
         response = microsservico_cadastro(name, cpf, user_type)
         
@@ -180,33 +177,33 @@ def handle_client_connection(connection_client):
         connection_client.sendall(response.encode())
         receber_dados_cadastro(connection_client)
     elif'CPF válido e usuário encontrado (paciente)!'in response:
-        #connection_client.sendall(response.encode())
-        #opcao = connection_client.recv(1024).decode().strip()
-        opcao = "1"
+        connection_client.sendall(response.encode())
+        opcao = connection_client.recv(1024).decode().strip()
         print(opcao)
         if opcao == '1':
-            print('sers')
-            dados_usuario = consulta_db(cpf)
-            user_type = dados_usuario['funcao']
-            connection_client.sendall(response.encode())
+            user_type = 1
             date = connection_client.recv(1024).decode().strip()
             microsservico_agenda(cpf, user_type, opcao, date)
         else:
-            print('awjb')
-            dados_usuario = consulta_db(cpf)
-            user_type = dados_usuario['funcao']
-            microsservico_agenda(cpf, user_type, opcao, date = None)
+            user_type = 1
+            response = microsservico_agenda(cpf, user_type, opcao, date =None)
+            connection_client.sendall(response.encode())
         #connection_client.recv(1024).decode().strip()
     elif 'CPF válido e usuário encontrado (médico)!' in response:
-        #connection_client.sendall(response.encode())
-        dados_usuario = consulta_db(cpf)
-        user_type = dados_usuario['funcao']     
-        microsservico_agenda(cpf, user_type, opcao = None, date = None)
+        connection_client.sendall(response.encode())
+        oimedico = connection_client.recv(1024).decode().strip()
+
+#        dados_usuario = consulta_db(cpf)
+        user_type = 2
+        print(user_type)
+
+        opcao = oimedico
+        print(opcao)
+
+        response = microsservico_agenda(cpf, user_type, opcao, date = None)
+        connection_client.sendall(response.encode())
         #continuação das funções do médico
         #recebe decisão do médico
-    consulta = connection_client.recv(1024).decode().strip()
-    print(consulta)
-
     
 while True:
     # Espera por uma nova conexão

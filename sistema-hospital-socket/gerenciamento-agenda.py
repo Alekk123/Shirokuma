@@ -12,7 +12,9 @@ s.listen()
 
 print('Gerenciamento de Agenda iniciado e esperando por conexões.')
 
-def consulta_date_db(date):
+
+
+"""def consulta_date_db(date):
     with open('consultas.json', 'r') as file:
         linhas = file.readlines()
 
@@ -42,55 +44,59 @@ def marcar_consulta(date):
         response = "406"
 
     return response
-
+"""
 def show_consultas_marcadas(cpf, user_type):
-    with open('consultas.json', 'r') as file:
-        linhas = file.readlines()
+    consultas = []
 
-    for linha in linhas:
-        dados = json.loads(linha)
+    with open('user.json', 'r') as user_file:
+        user_dados = json.load(user_file)
+        
+    with open('consultas.json', 'r') as file:
+        linhas = json.load(file)
+
+    print(cpf, user_type)
+
+    for dados in linhas:
         consulta_date = dados['date']
         consulta_medico_cpf = dados['medico_cpf']
         consulta_paciente_cpf = dados['paciente_cpf']
+#        print(consulta_date, consulta_medico_cpf, consulta_paciente_cpf)
 
 
-        if user_type == 2:
+        if user_type == '2':
             if consulta_medico_cpf == cpf:
-                with open('user.json', 'r') as user_file:
-                    user_linhas = file.readlines()
-
-                    for user_linha in user_linhas:
-                        user_dados = json.loads(user_linha)
-                        bd_nome = user_dados["nome"]
-                        bd_cpf = user_dados['cpf']
-                    if bd_cpf == consulta_paciente_cpf:
-                        nome_paciente = bd_nome        
-                print(f"Consulta no dia: {consulta_date} - Com o paciente: {nome_paciente} - de CPF: {consulta_paciente_cpf}\n")
-            else: 
-                print("Sem Consultas Marcadas com Você")
+                    for paciente in user_dados['pacientes']:
+                        if paciente['cpf'] == consulta_paciente_cpf:
+                            nome_paciente = paciente['nome']
+                            response = f"Consulta no dia: {consulta_date} - Com o paciente: {nome_paciente} - de CPF: {consulta_paciente_cpf}"
+                            print(response)
+                            consultas.append(response)
+                    else:
+                        consultas.append('Sem Consultas Marcadas com Você awerjbaer')
+                        continue
+                        
         else:
             if consulta_paciente_cpf == cpf:
-                with open('user.json', 'r') as user_file:
-                    user_linhas = file.readlines()
-                    for user_linha in user_linhas:
-                        user_dados = json.loads(user_linha)
-                        bd_nome = user_dados["nome"]
-                        bd_cpf = user_dados['cpf']
-                    if bd_cpf == consulta_medico_cpf:
-                        nome_medico = bd_nome        
-                print(f"Consulta no dia: {consulta_date} - Com o medico: {nome_medico} - de CPF: {consulta_medico_cpf}\n")
-            else: 
-                print("Sem Consultas Marcadas com Você")
-        return response
+                for medico in user_dados['medicos']:
+                    if medico['cpf'] == consulta_medico_cpf:
+                        nome_medico = medico['nome']
+                        response = f"Consulta no dia: {consulta_date} - Com o medico: {nome_medico} - de CPF: {consulta_medico_cpf}\n"
+                        print(response)
+                        consultas.append(response)
+                    else:
+                        #consultas.append('Sem Consultas Marcadas com Você caruinha')
+                        continue
+
+    if not consultas:
+        consultas.append('Sem Consultas Marcadas com Você nohnohno')
+
+    return '\n'.join(consultas)
      
 
 while True:
     # Espera por uma conexão
     conn, addr = s.accept()
     print(f'Conectado por {addr}')
-
-    #data = conn.recv(1024).decode().strip()
-    #name, cpf = data.split(';')
 
     data = conn.recv(1024).decode().strip()
 
@@ -99,16 +105,20 @@ while True:
         break
 
     # Divide os dados recebidos em nome e CPF
-    #name, cpf, funcao= data.split(';')
     cpf, user_type, decision_task, date = data.split(';')
 
-    if user_type == 1:
-        if decision_task == 1:
-            response = marcar_consulta(date)
+    if user_type == "1":
+        if decision_task == "1":
+            print('nada')
+            #response = marcar_consulta(date)
         else:
-            response = show_consultas_marcadas(cpf, user_type)
+            consulta = show_consultas_marcadas(cpf, user_type)
+            conn.sendall(consulta.encode())
     else:
-        response = show_consultas_marcadas(cpf, user_type)
+        print('chegou nhon')
+        consulta = show_consultas_marcadas(cpf, user_type)
+        conn.sendall(consulta.encode())
+    
 
 
 #    response = consulta_date_db(cpf, user_type)
@@ -116,8 +126,6 @@ while True:
 #        response = "Consulta Realizado"
 #    else:
 #        response = "Consulta Falhou"
-
-    conn.sendall(response.encode())
 
     # Fecha a conexão
     conn.close()

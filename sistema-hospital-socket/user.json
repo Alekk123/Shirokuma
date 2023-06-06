@@ -8,24 +8,37 @@
       "especialidade": "Neurologista"
     },
     {
-      "nome": "marcos",
-      "cpf": "15113688886",
-      "funcao": 2,
-      "crm": "4564",
-      "especialidade": "toba"
-    },
-    {
       "nome": "Gustavo",
       "cpf": "56803287807",
       "funcao": 2,
       "crm": "123456SP",
-      "especialidade": "urologia"
+      "especialidade": "Ortopedia"
     }
   ],
   "pacientes": [
     {
       "nome": "Marcos Trindade",
       "cpf": "22856690890",
+      "funcao": 1
+    },
+    {
+      "nome": "Silvio Santos",
+      "cpf": "61586075098",
+      "funcao": 1
+    },
+    {
+      "nome": "Luiza Medeiros",
+      "cpf": "77334614054",
+      "funcao": 1
+    },
+    {
+      "nome": "Girafales",
+      "cpf": "51359099077",
+      "funcao": 1
+    },
+    {
+      "nome": "Jorge",
+      "cpf": "30146919092",
       "funcao": 1
     }
   ]
