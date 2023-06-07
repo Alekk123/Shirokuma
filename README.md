@@ -20,8 +20,7 @@ cliente dentro de uma mesma rede.
 ### Funcionalidades
 - `Funcionalidade 1`: Cadastro de pacientes e médicos no sistema
 - `Funcionalidade 2`: Agendamento de consultas pelo usuário
-- `Funcionalidade 3`: Alteração de dados dos usuários
-- `Funcionalidade 4`: Visualizar consultas agendadas por paciente e médico
+- `Funcionalidade 3`: Visualizar consultas agendadas por paciente e médico
 
 ### Tecnologias Utilizadas
 - Python
