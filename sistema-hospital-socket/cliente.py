@@ -165,32 +165,12 @@ def input_data():
         elif 'CPF válido e usuário encontrado (paciente)!' in response:
             print(response)
             menu_paciente()
-            """print(f'Bem-vindo(a) ao sistema {name}\nQual serviço deseja executar?\nDigite o número correspondente ao serviço desejado\n1. Agendar Consulta\n2. Verificar Consultar Agendadadas\n3. Sair\n')
-            while True:
-                opcao = input('>')
-                if opcao == '1': # agendar consulta
-                    client_socket.sendall(opcao.encode())
-                    date = input("Digite a data que deseja marcar a sua consulta (dd-mm-aa): ")
-                    client_socket.sendall(date.encode())
-                    print('Favor')
-                elif opcao == '2': #mostrar vericar
-                    client_socket.sendall(opcao.encode())
-                    consultas = client_socket.recv(2048).decode().strip()
-                    print(consultas)
-                elif opcao == '3':
-                    print('nada')
-                    break
-                else:
-                    print('Opção Inválida, Tente Novamente\n')"""
+           
                     
         elif 'CPF válido e usuário encontrado (médico)!' in response:
             print(response)
             menu_medico(name)
-            """print(f"Bem vindo ao sistema Dre. {name}\n Aqui estão as suas consultas marcadas:\n")
-            opcao = '2'
-            client_socket.sendall(opcao.encode())
-            consultas = client_socket.recv(2048).decode().strip()
-            print(consultas)"""
+           
 
 # Executa a função para inserção de dados do cliente
 input_data()
