@@ -110,7 +110,7 @@ def input_data():
 
         # Recebe a resposta do servidor sobre validação dos dados
         response = client_socket.recv(2048).decode().strip()
-        print(response) #ok
+        #print(response) #ok
     
         # Verifica se a resposta indica que os dados são inválidos
         if 'CPF inválido' in response:

@@ -13,13 +13,6 @@
       "funcao": 2,
       "crm": "123456SP",
       "especialidade": "Ortopedia"
-    },
-    {
-      "nome": "bruhf",
-      "cpf": "15113688886",
-      "funcao": 2,
-      "crm": "1321",
-      "especialidade": "btub"
     }
   ],
   "pacientes": [
@@ -46,11 +39,6 @@
     {
       "nome": "Jorge",
       "cpf": "30146919092",
-      "funcao": 1
-    },
-    {
-      "nome": "bruna",
-      "cpf": "47558880858",
       "funcao": 1
     }
   ]
