@@ -1,5 +1,6 @@
 import socket
 import json
+import random
 
 HOST = 'localhost'
 PORT = 5002
@@ -29,22 +30,56 @@ print('Gerenciamento de Agenda iniciado e esperando por conexões.')
         else: 
             response = False
             return response + consulta_medico_cpf
-    return response 
+    return response """
 
-def marcar_consulta(date):
-    diaOcupado, cpf_medico = consulta_date_db(date)
-    if diaOcupado == False:
-        consulta_final = {'date': date, 'medico_cpf': cpf_medico, 'paciente_cpf': cpf}
+def marcar_consulta(date, cpf_cliente):
+    """with open('user.json', 'r') as user_file:
+        user_dados = json.load(user_file)
+
+        medicos = user_dados['medicos']
+        cpfs_medicos = [medico['cpf'] for medico in medicos]
+        cpf_aleatorio = random.choice(cpfs_medicos)
+        
+        nome_medico = next((medico['nome'] for medico in medicos if medico['cpf'] == cpf_aleatorio), None)
+
+        consulta_final = {'date': date, 'medico_cpf': cpf_aleatorio, 'paciente_cpf': cpf_cliente}
         json_data = json.dumps(consulta_final)
-        with open('consultas.json', 'a') as file:
-            file.write(json_data)
-            file.write('\n')
-            response = "200"
-    else:
-        response = "406"
+        
+        response = f'Agendado Consulta para o dia {date}, com o Dr. {nome_medico}'"""
+    
+    
+    with open('user.json', 'r') as user_file:
+        user_dados = json.load(user_file)
+        cpf_medicos = []
+        for medico in user_dados['medicos']:
+            if medico['cpf']:
+                 cpf_existente = medico['cpf']
+                 cpf_medicos.append(cpf_existente)
+        
+        cpf_consulta_medico = random.choice(cpf_medicos)  
+#    diaOcupado, cpf_medico = consulta_date_db(date)
+#    if diaOcupado == False:
+        consulta_final = {'date': date, 'medico_cpf': cpf_consulta_medico, 'paciente_cpf': cpf}
+        with open('consultas.json', 'r') as file:
+            data = json.load(file)
+        
+        data.append(consulta_final)
+    
+        with open('consultas.json', 'w') as file:
+            json.dump(data, file, indent=2)
+        
+        response = "Consulta marcada com sucesso!"
+        return response
+    
+       
+#    else:
+#        response = "406"
 
     return response
-"""
+
+  
+
+
 def show_consultas_marcadas(cpf, user_type):
     consultas = []
 
@@ -88,7 +123,7 @@ def show_consultas_marcadas(cpf, user_type):
                         continue
 
     if not consultas:
-        consultas.append('Sem Consultas Marcadas com Você nohnohno')
+        consultas.append('Sem Consultas Marcadas com Você')
 
     return '\n'.join(consultas)
      
@@ -109,8 +144,8 @@ while True:
 
     if user_type == "1":
         if decision_task == "1":
-            print('nada')
-            #response = marcar_consulta(date)
+            marcada = marcar_consulta(date, cpf)
+            conn.sendall(marcada.encode())
         else:
             consulta = show_consultas_marcadas(cpf, user_type)
             conn.sendall(consulta.encode())

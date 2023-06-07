@@ -62,8 +62,6 @@ def enviar_dados_cadastro(name, cpf):
     # Verifica se o cadastro foi realizado com sucesso
     if 'Paciente cadastrado com sucesso' in response:
         response = 'Paciente cadastrado com sucesso!'
-        # Continue com as operações adicionais que desejar
-    
     elif 'Médico cadastrado com sucesso' in response:
         response = 'Médico cadastrado com sucesso'
     else:
@@ -80,13 +78,16 @@ def menu_paciente():
 
         if opcao == '1': # agendar consulta
             client_socket.sendall(opcao.encode())
-            date = input("Digite a data que deseja marcar a sua consulta (dd-mm-aa): ")
+            date = input("Digite a data que deseja marcar a sua consulta (dd-mm-aaaa): ")
             client_socket.sendall(date.encode())
-            print('Favor')
+            response = client_socket.recv(2048).decode().strip()
+            print(response)
+            break
         elif opcao == '2': #mostrar vericar
             client_socket.sendall(opcao.encode())
             consultas = client_socket.recv(2048).decode().strip()
             print(consultas)
+            break
         elif opcao == '3':
             print('Encerrando conexão.')
             break
@@ -109,7 +110,7 @@ def input_data():
 
         # Recebe a resposta do servidor sobre validação dos dados
         response = client_socket.recv(2048).decode().strip()
-        #print(response) #ok
+        print(response) #ok
     
         # Verifica se a resposta indica que os dados são inválidos
         if 'CPF inválido' in response:
@@ -127,12 +128,16 @@ def input_data():
                     print(response)
 
                     if 'CPF válido, porém usuário não encontrado' in response:
+                        #print('CPF válido, porém usuário não encontrado, realizando cadastro')
                         response = enviar_dados_cadastro(name, cpf)
                         print(response)
+
                         if 'Médico cadastrado com sucesso' in response:
+                            print(response)
                             menu_medico(name)
                         elif 'Paciente cadastrado com sucesso' in response:
-                            menu_paciente(name)
+                            print(response)
+                            menu_paciente()
                         else:
                             print('Falha ao realizar o cadastro. Tente novamente.')
                     
@@ -146,11 +151,18 @@ def input_data():
 
         # Verifica se a resposta indica que o CPF é válido
         elif 'CPF válido, porém usuário não encontrado' in response:
+            print('CPF válido, porém usuário não encontrado, realizando cadastro')
             #client_socket.sendall(response.encode())
             response = enviar_dados_cadastro(name, cpf)
             print(response)
-            return
-        elif 'CPF válido e usuário encontrado (paciente)!'in response:
+            if 'Médico cadastrado com sucesso' in response:
+                menu_medico(name)
+            elif 'Paciente cadastrado com sucesso' in response:
+                menu_paciente()
+            else:
+                print('Falha ao realizar o cadastro. Tente novamente.')
+                return
+        elif 'CPF válido e usuário encontrado (paciente)!' in response:
             print(response)
             menu_paciente()
             """print(f'Bem-vindo(a) ao sistema {name}\nQual serviço deseja executar?\nDigite o número correspondente ao serviço desejado\n1. Agendar Consulta\n2. Verificar Consultar Agendadadas\n3. Sair\n')

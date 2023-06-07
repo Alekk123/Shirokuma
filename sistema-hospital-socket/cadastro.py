@@ -52,6 +52,10 @@ while True:
             'crm': crm,
             'especialidade': especialidade
         })
+    elif user_type == 'GET_LISTA_MEDICOS':
+        lista_medicos = data['medicos']
+        lista_medicos_json = json.dumps(lista_medicos)
+        conn.sendall(lista_medicos_json.encode())
         
     #conn.sendall(response.encode())
 

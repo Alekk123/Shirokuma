@@ -141,7 +141,6 @@ def handle_client_connection(connection_client):
     # Valide o CPF e envie a resposta para o cliente
     response = microsservico_validador(name, cpf)
     print(response)
-    #connection_client.sendall(response.encode())
 
     if response == 'CPF inválido!':
         connection_client.sendall(response.encode())
@@ -164,11 +163,38 @@ def handle_client_connection(connection_client):
             elif 'CPF válido, porém usuário não encontrado' in choice:
                 # Inicia o processo de cadastro automaticamente
                 response = receber_dados_cadastro(connection_client)
-                #connection_client.sendall(response.encode())
                 break
     elif response == 'CPF válido, porém usuário não encontrado. Favor realizar cadastro!':
         connection_client.sendall(response.encode())
-        receber_dados_cadastro(connection_client)
+        response = receber_dados_cadastro(connection_client)
+        print(response)
+        if'Paciente cadastrado com sucesso'in response:
+            opcao = connection_client.recv(1024).decode().strip()
+            print(opcao)
+            if opcao == '1':
+                user_type = 1
+                date = connection_client.recv(1024).decode().strip()
+                microsservico_agenda(cpf, user_type, opcao, date)
+            else:
+                user_type = 1
+                response = microsservico_agenda(cpf, user_type, opcao, date =None)
+                connection_client.sendall(response.encode())
+            #connection_client.recv(1024).decode().strip()
+        elif 'Médico cadastrado com sucesso' in response:
+           
+            oimedico = connection_client.recv(1024).decode().strip()
+
+            user_type = 2
+            print(user_type)
+
+            opcao = oimedico
+            print(opcao)
+
+            response = microsservico_agenda(cpf, user_type, opcao, date = None)
+            connection_client.sendall(response.encode())
+            #continuação das funções do médico
+            #recebe decisão do médico
+        
     elif'CPF válido e usuário encontrado (paciente)!'in response:
         connection_client.sendall(response.encode())
         opcao = connection_client.recv(1024).decode().strip()
@@ -176,7 +202,9 @@ def handle_client_connection(connection_client):
         if opcao == '1':
             user_type = 1
             date = connection_client.recv(1024).decode().strip()
-            microsservico_agenda(cpf, user_type, opcao, date)
+            print(date)
+            response = microsservico_agenda(cpf, user_type, opcao, date)
+            connection_client.sendall(response.encode())
         else:
             user_type = 1
             response = microsservico_agenda(cpf, user_type, opcao, date =None)
@@ -186,7 +214,6 @@ def handle_client_connection(connection_client):
         connection_client.sendall(response.encode())
         oimedico = connection_client.recv(1024).decode().strip()
 
-#        dados_usuario = consulta_db(cpf)
         user_type = 2
         print(user_type)
 
